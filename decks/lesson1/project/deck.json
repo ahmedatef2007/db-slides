@@ -1,0 +1,77 @@
+{
+ "v": 4,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-01T11:12:20Z"
+ },
+ "lists": "css",
+ "title": "Lesson 1 · Introduction to Databases",
+ "cover": "cover",
+ "order": [
+  "cover",
+  "course",
+  "objectives",
+  "d1",
+  "filebased",
+  "filelimits",
+  "definitions",
+  "dbsystem",
+  "functions",
+  "proscons",
+  "users",
+  "d2",
+  "threeschema",
+  "levels",
+  "independence",
+  "models",
+  "relational",
+  "d3",
+  "nosql",
+  "nosqltypes",
+  "sqlvsnosql",
+  "dw",
+  "bigdata",
+  "environments",
+  "statement",
+  "recap",
+  "practice",
+  "study"
+ ],
+ "sections": {
+  "s1": {
+   "description": "Why organizations moved from separate program files to a shared, managed database.",
+   "start": "d1"
+  },
+  "s2": {
+   "description": "How a DBMS separates what users see from how data is stored, and why that matters.",
+   "start": "d2"
+  },
+  "s3": {
+   "description": "NoSQL stores, data warehouses, Big Data and where databases run.",
+   "start": "d3"
+  }
+ },
+ "faces": {
+  "space-grotesk": {
+   "family": "Space Grotesk",
+   "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&display=swap"
+  },
+  "ibm-plex-sans": {
+   "family": "IBM Plex Sans",
+   "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&display=swap"
+  },
+  "jetbrains-mono": {
+   "family": "JetBrains Mono",
+   "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
+  }
+ },
+ "designSystems": [
+  {
+   "title": "Database Course",
+   "namespace": "databasecourse",
+   "artifact": "https://claude.ai/artifact/WdbVXkRa43NmX6n2AKuXTF",
+   "version": "1790852595-4915",
+   "copiedAt": "2026-10-01T11:12:20Z"
+  }
+ ]
+}

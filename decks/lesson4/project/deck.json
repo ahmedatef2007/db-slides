@@ -1,0 +1,134 @@
+{
+ "v": 4,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-01T11:16:06Z"
+ },
+ "lists": "css",
+ "title": "Lesson 4 · SQL",
+ "cover": "cover",
+ "order": [
+  "cover",
+  "objectives",
+  "d1",
+  "families",
+  "transactions",
+  "txexample",
+  "schema",
+  "datatypes",
+  "d2",
+  "create",
+  "createcompany",
+  "alter",
+  "alterex",
+  "drop",
+  "truncate",
+  "d3",
+  "insert",
+  "insertex",
+  "update",
+  "updatesafe",
+  "delete",
+  "d4",
+  "select",
+  "simple",
+  "distinct",
+  "operators",
+  "nulls",
+  "logical",
+  "arith",
+  "orderby",
+  "case",
+  "d5",
+  "jointypes",
+  "innerjoin",
+  "ambiguous",
+  "selfjoin",
+  "outerjoin",
+  "nonequi",
+  "crossjoin",
+  "d6",
+  "subq",
+  "subq2",
+  "allany",
+  "exists",
+  "existsdml",
+  "setops",
+  "cte",
+  "d7",
+  "aggs",
+  "groupby",
+  "having",
+  "window",
+  "d8",
+  "dcl",
+  "views",
+  "viewtypes",
+  "createview",
+  "checkoption",
+  "indexes",
+  "indexrules",
+  "createindex",
+  "statement",
+  "recap",
+  "practice",
+  "study"
+ ],
+ "sections": {
+  "s1": {
+   "description": "The four families of SQL statements, transactions, schemas, data types and constraints.",
+   "start": "d1"
+  },
+  "s2": {
+   "description": "CREATE, ALTER, DROP and TRUNCATE.",
+   "start": "d2"
+  },
+  "s3": {
+   "description": "INSERT, UPDATE and DELETE, and how not to update every row by accident.",
+   "start": "d3"
+  },
+  "s4": {
+   "description": "SELECT, filtering, NULLs, sorting and computed columns.",
+   "start": "d4"
+  },
+  "s5": {
+   "description": "Combine rows from several tables: inner, outer, self, non-equi and cross joins.",
+   "start": "d5"
+  },
+  "s6": {
+   "description": "Queries inside queries, EXISTS, UNION and friends, and CTEs.",
+   "start": "d6"
+  },
+  "s7": {
+   "description": "Aggregate functions, GROUP BY, HAVING and window functions.",
+   "start": "d7"
+  },
+  "s8": {
+   "description": "Control access, simplify queries and speed up searches.",
+   "start": "d8"
+  }
+ },
+ "faces": {
+  "space-grotesk": {
+   "family": "Space Grotesk",
+   "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&display=swap"
+  },
+  "ibm-plex-sans": {
+   "family": "IBM Plex Sans",
+   "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&display=swap"
+  },
+  "jetbrains-mono": {
+   "family": "JetBrains Mono",
+   "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
+  }
+ },
+ "designSystems": [
+  {
+   "title": "Database Course",
+   "namespace": "databasecourse",
+   "artifact": "https://claude.ai/artifact/WdbVXkRa43NmX6n2AKuXTF",
+   "version": "1790852595-4915",
+   "copiedAt": "2026-10-01T11:16:06Z"
+  }
+ ]
+}

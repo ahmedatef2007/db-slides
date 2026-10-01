@@ -1,0 +1,81 @@
+{
+ "v": 4,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-01T11:12:20Z"
+ },
+ "lists": "css",
+ "title": "Lesson 3 · Mapping ERD to Tables",
+ "cover": "cover",
+ "order": [
+  "cover",
+  "objectives",
+  "d1",
+  "terms",
+  "constraints",
+  "keys",
+  "d2",
+  "overview",
+  "step1",
+  "step2",
+  "step3",
+  "step4",
+  "step5",
+  "step6",
+  "step7",
+  "summary",
+  "d3",
+  "companyschema",
+  "companyfks",
+  "companysql",
+  "d4",
+  "ternary",
+  "car",
+  "bus",
+  "bank",
+  "recap",
+  "practice",
+  "study"
+ ],
+ "sections": {
+  "s1": {
+   "description": "The target of the mapping: relations, keys and integrity constraints.",
+   "start": "d1"
+  },
+  "s2": {
+   "description": "Apply them in order; each step adds tables or columns to the schema.",
+   "start": "d2"
+  },
+  "s3": {
+   "description": "All seven steps applied to the ERD from Lesson 2.",
+   "start": "d3"
+  },
+  "s4": {
+   "description": "When three entities must be related at once, and practice on three narratives.",
+   "start": "d4"
+  }
+ },
+ "faces": {
+  "space-grotesk": {
+   "family": "Space Grotesk",
+   "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&display=swap"
+  },
+  "ibm-plex-sans": {
+   "family": "IBM Plex Sans",
+   "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&display=swap"
+  },
+  "jetbrains-mono": {
+   "family": "JetBrains Mono",
+   "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
+  }
+ },
+ "designSystems": [
+  {
+   "title": "Database Course",
+   "namespace": "databasecourse",
+   "artifact": "https://claude.ai/artifact/WdbVXkRa43NmX6n2AKuXTF",
+   "version": "1790852595-4915",
+   "copiedAt": "2026-10-01T11:12:20Z"
+  }
+ ]
+}

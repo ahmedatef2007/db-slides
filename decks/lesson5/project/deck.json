@@ -1,0 +1,89 @@
+{
+ "v": 4,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-01T11:19:01Z"
+ },
+ "lists": "css",
+ "title": "Lesson 5 · Normalization",
+ "cover": "cover",
+ "order": [
+  "cover",
+  "objectives",
+  "d1",
+  "what",
+  "anomalies",
+  "guidelines",
+  "avoids",
+  "d2",
+  "fd",
+  "fdpartial",
+  "fdtransitive",
+  "fdtypes",
+  "d3",
+  "ladder",
+  "1nf",
+  "school0",
+  "school1",
+  "2nf",
+  "school2",
+  "3nf",
+  "school3",
+  "bcnf",
+  "4nf5nf",
+  "decomp",
+  "denorm",
+  "d4",
+  "iti0",
+  "iti1",
+  "real0",
+  "real1",
+  "supp0",
+  "supp1",
+  "recap",
+  "salesorder",
+  "practice",
+  "study"
+ ],
+ "sections": {
+  "s1": {
+   "description": "Redundancy causes anomalies; normal forms are tests that catch them.",
+   "start": "d1"
+  },
+  "s2": {
+   "description": "The formal tool behind every normal form.",
+   "start": "d2"
+  },
+  "s3": {
+   "description": "1NF, 2NF and 3NF step by step, then BCNF and beyond.",
+   "start": "d3"
+  },
+  "s4": {
+   "description": "An ITI student sheet, real school data, and a suppliers table.",
+   "start": "d4"
+  }
+ },
+ "faces": {
+  "space-grotesk": {
+   "family": "Space Grotesk",
+   "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400..700&display=swap"
+  },
+  "ibm-plex-sans": {
+   "family": "IBM Plex Sans",
+   "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&display=swap"
+  },
+  "jetbrains-mono": {
+   "family": "JetBrains Mono",
+   "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
+  }
+ },
+ "designSystems": [
+  {
+   "title": "Database Course",
+   "namespace": "databasecourse",
+   "artifact": "https://claude.ai/artifact/WdbVXkRa43NmX6n2AKuXTF",
+   "version": "1790852595-4915",
+   "copiedAt": "2026-10-01T11:19:01Z"
+  }
+ ]
+}
