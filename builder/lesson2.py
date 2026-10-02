@@ -302,7 +302,7 @@ def build():
            + pin_text(1180, y - 64, 180, "works on", 24, MUTED, italic=True, align="center")
            + pin_block(128, 700, 1664, row(
                callout("**DEPARTMENT ||——o< EMPLOYEE**: an employee works for exactly one department; a department has zero or many employees.", tone="blue", size=26),
-               callout("**EMPLOYEE >|——|< PROJECT**: M:N, both total. In a real schema this becomes the WORKS_ON junction table (Lesson 3).", size=26))))
+               callout("**EMPLOYEE >|——|< PROJECT**: M:N, both total; it becomes the WORKS_ON junction table. Tools draw logical models, so PK/FK columns appear; a Chen ERD has no FKs.", size=26))))
     d.slide("crowsdraw", "Notation", "Crow's foot, drawn", art,
             notes="New diagram: the same COMPANY relationships drawn the way dbdiagram.io, draw.io or MySQL Workbench draw them. The symbol next to an entity tells how many of THAT entity relate to one instance on the other side: o< next to EMPLOYEE = a department has zero or many employees; || next to DEPARTMENT = an employee has exactly one department.")
 

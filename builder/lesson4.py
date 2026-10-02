@@ -160,7 +160,8 @@ ALTER TABLE department
 
 -- change a column's type (syntax varies):
 ALTER TABLE students ALTER COLUMN city TYPE VARCHAR(80);  -- PostgreSQL
-ALTER TABLE students MODIFY city VARCHAR2(80);            -- Oracle""",
+ALTER TABLE students MODIFY city VARCHAR2(80);            -- Oracle
+ALTER TABLE students ALTER COLUMN city VARCHAR(80);       -- SQL Server""",
               [card(None, body="ALTER changes the **structure** of an existing table: add or drop columns and constraints, change types.", size=28),
                callout("Existing rows get **NULL** (or the DEFAULT) in a new column.", tone="blue", size=26)],
               size=24)
@@ -170,7 +171,7 @@ ALTER TABLE students MODIFY city VARCHAR2(80);            -- Oracle""",
                     table(["LastName", "FirstName", "Address"], [["Pettersen", "Kari", "Storgt 20"]], size=26), flex="1", gap=12),
                 col(p("After", size=24, color=MUTED, extra="font-weight:600"),
                     table(["LastName", "FirstName", "Address", "City"], [["Pettersen", "Kari", "Storgt 20", "NULL"]], size=26), flex="1", gap=12), gap=40)
-            + code_block("ALTER TABLE students ADD city VARCHAR(30);", size=30))
+            + code_block("ALTER TABLE persons ADD city VARCHAR(30);", size=30))
 
     code_side("drop", "DDL", "DROP TABLE",
               """DROP TABLE students;
@@ -213,15 +214,15 @@ INSERT INTO students (id, first_name, last_name) VALUES
 INSERT INTO alumni (id, name)
 SELECT id, first_name FROM students WHERE gpa >= 3.5;""",
               [callout("Always **list the columns**: the statement keeps working if someone adds a column later.", tone="blue", size=26),
-               callout("Dates in **ISO format** 'YYYY-MM-DD' are understood by every DBMS.", size=26)],
+               callout("Write dates as **'YYYY-MM-DD'** (SQL Server, PostgreSQL, MySQL). Oracle needs the ANSI literal **DATE '2003-05-14'** or TO_DATE.", size=26)],
               size=24,
               notes="Modernized: the original used 'Jan-10-1999' style dates, which depend on the DBMS's date format settings.")
 
     code_result("insertex", "DML", "INSERT with missing columns",
-                "INSERT INTO students (last_name, city)\nVALUES ('Hassan', 'Assiut');",
+                "INSERT INTO persons (last_name, city)\nVALUES ('Hassan', 'Assiut');",
                 ["LastName", "FirstName", "Address", "City"],
                 [["El-Sayed", "Mohamed", "Nasr City", "Cairo"], ["Saleh", "Ahmed", "Moharam Bek", "Alex."], ["**Hassan**", "NULL", "NULL", "**Assiut**"]],
-                notes="Columns not listed get NULL (or their DEFAULT). If a missing column is NOT NULL without a default, the INSERT fails.")
+                notes="Columns not listed get NULL (or their DEFAULT). If a missing column is NOT NULL without a default, the INSERT fails: that is why this example uses a simple persons table, not students (whose id and first_name are required).")
 
     d.slide("update", "DML", "UPDATE",
             row(code_block("""UPDATE store_information
@@ -239,7 +240,7 @@ WHERE  store_name = 'Los Angeles'
 
     code_side("updatesafe", "DML", "Update safely",
               """-- several columns at once
-UPDATE students
+UPDATE persons
 SET    address = '241 El-Haram', city = 'Giza'
 WHERE  last_name = 'El-Sayed';
 
@@ -507,12 +508,12 @@ FROM   employee e, project p;   -- no join condition""",
                                            "Usually in **WHERE** or **HAVING**",
                                            "In **FROM** it is a derived table (an *inline view*)",
                                            "Single-row subqueries use = < >; multi-row ones use IN, ANY, ALL"]),
-                code_block("""-- employees working in Giza
+                code_block("""-- employees in departments located in Houston
 SELECT fname
 FROM   employee
 WHERE  dno IN (SELECT dnumber
                FROM   dept_locations
-               WHERE  dlocation = 'Giza');""", size=26, flex="1"), gap=32))
+               WHERE  dlocation = 'Houston');""", size=26, flex="1"), gap=32))
 
     code_side("subq2", "Subqueries", "Subqueries returning one value",
               """-- department of the highest-paid employee
@@ -580,12 +581,12 @@ WHERE  EXISTS (SELECT 1 FROM customers c
                       [["UNION", "Rows in either query", "Removed"], ["UNION ALL", "Rows in either query", "Kept (faster)"],
                        ["INTERSECT", "Rows in both queries", "Removed"], ["EXCEPT (MINUS in Oracle)", "Rows in the first but not the second", "Removed"]],
                       widths=[34, 42, 24], size=24),
-                code_block("""-- departments in Giza or managed by 333445555
+                code_block("""-- departments in Stafford or managed by 333445555
 SELECT dnumber FROM department
 WHERE  mgr_ssn = '333445555'
 UNION
 SELECT dnumber FROM dept_locations
-WHERE  dlocation = 'Giza';""", size=24, flex="2"), gap=32)
+WHERE  dlocation = 'Stafford';""", size=24, flex="2"), gap=32)
             + callout("Both queries need the **same number of columns** with **compatible types**; the result uses the column names of the **first** query.", tone="blue", size=26),
             notes="Completes the original, which covered only UNION and UNION ALL. Example 2 from the original: SELECT name FROM employees UNION SELECT name FROM employees_retired (current and previous employees).")
 
@@ -621,7 +622,7 @@ FROM   employee e
 JOIN   department d ON d.dnumber = e.dno
 WHERE  d.dname = 'Research';""",
               [card(None, body="Aggregates take **many rows** and return **one value** per group: COUNT, SUM, AVG, MIN, MAX.", size=26),
-               callout("They **ignore NULLs**: COUNT(*) counts rows, COUNT(col) counts only non-null values (8 employees, but COUNT(super_ssn) = 7).", size=26)],
+               callout("All except COUNT(*) **ignore NULLs**: COUNT(*) counts rows, COUNT(col) counts only non-null values (8 employees, but COUNT(super_ssn) = 7).", size=26)],
               size=24)
 
     code_result("groupby", "Aggregation", "GROUP BY",

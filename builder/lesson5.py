@@ -338,7 +338,7 @@ def build():
         ("Core", "Classify each FD as full, partial or transitive in the school example."),
         ("Stretch", "Normalize the **sales order** on the previous slide and say which values should not be stored."),
         ("Stretch", "Is BOOK(ISBN, Title, AuthorID, AuthorName, PublisherID, PublisherCity) in 3NF? Fix it."),
-        ("Challenge", "Find a table in BCNF violation in your own project, decompose it, and check the join is lossless.")])
+        ("Challenge", "Find a table that violates BCNF in your own project, decompose it, and check the join is lossless.")])
 
     d.resources("study", "Go deeper: Lesson 5", [
         ("Book", "Elmasri & Navathe (7th ed.)", "chapters 14–15: FDs, normal forms, decomposition properties", ""),

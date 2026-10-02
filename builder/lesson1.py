@@ -201,7 +201,7 @@ def build():
     d.divider("d3", "03", "Beyond relational", "NoSQL stores, data warehouses, Big Data and where databases run.")
 
     d.slide("nosql", "Beyond relational", "Non-relational (NoSQL) databases",
-            row(col(p("No fixed tables, rows or foreign keys. Each store uses a **data model optimized for one kind of data** and access pattern.", size=32),
+            row(col(p("Usually **no fixed schema and no foreign keys**. Each store uses a **data model optimized for one kind of data** and access pattern.", size=32),
                     ul(["NoSQL = **Not Only SQL**", "Usually schema-flexible", "Built to scale out across many servers",
                         "Some offer SQL-like query languages (e.g. Cassandra CQL)"], size=30), gap=24, flex="1"),
                 code_block('{\n  "_id": 1042,\n  "name": "Mai",\n  "phones": ["010...", "011..."],\n  "address": { "city": "Giza" }\n}', size=28, flex="1", plain=True), gap=48),
@@ -269,7 +269,7 @@ def build():
             + pin_text(1000, 300, 792, "Three-tier (web)", 30, BLUE, bold=True)
             + pin_box(900, 300, 2, 600, fill=LINE)
             + pin_text(128, 770, 720, "Each PC runs the application and talks to the database directly.", 26, BODY)
-            + pin_text(1000, 820, 792, "Only the server runs the application; users need just a browser. The database is never exposed to the internet.", 26, BODY))
+            + pin_text(1000, 820, 792, "Only the server runs the application; users need just a browser. The database server stays behind the app server, off the public internet.", 26, BODY))
     d.diagram("tiers", "Beyond relational", "Two-tier vs three-tier", e, side=side,
               notes="New diagram for the 'Database environment' part of the original course. Mainframe: terminals talk to one powerful machine. Client/server: the database lives on a server and each PC runs the client. Internet computing: the application is installed on one web server; users only need a browser.")
 
@@ -290,7 +290,7 @@ def build():
         ("Core", "Which **role** does each task: design the ERD, restore a backup, build the payroll app, run the monthly report?"),
         ("Stretch", "For a library database, give one change that needs **logical** data independence and one that needs **physical** data independence."),
         ("Stretch", "Choose a NoSQL family for: a shopping cart, friend-of-a-friend search, a product catalog with varying attributes, sensor readings."),
-        ("Challenge", "Open db-fiddle.com (PostgreSQL), create a table and insert 3 rows. Which schema level did each statement touch?")])
+        ("Challenge", "Open db-fiddle.com (PostgreSQL) and run CREATE TABLE, then CREATE INDEX on one column. Which level of the three-schema architecture does each statement change?")])
 
     d.resources("study", "Go deeper: Lesson 1", [
         ("Book", "Elmasri & Navathe, Fundamentals of Database Systems (7th ed.)", "chapters 1–2: concepts and architecture", ""),
