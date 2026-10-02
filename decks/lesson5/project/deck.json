@@ -2,7 +2,7 @@
  "v": 4,
  "createdOnFiles": {
   "v": 1,
-  "at": "2026-10-01T11:19:01Z"
+  "at": "2026-10-02T17:07:48Z"
  },
  "lists": "css",
  "title": "Lesson 5 · Normalization",
@@ -32,6 +32,7 @@
   "bcnf",
   "4nf5nf",
   "decomp",
+  "decompex",
   "denorm",
   "d4",
   "iti0",
@@ -55,11 +56,11 @@
    "start": "d2"
   },
   "s3": {
-   "description": "1NF, 2NF and 3NF step by step, then BCNF and beyond.",
+   "description": "1NF, 2NF and 3NF step by step, then BCNF, 4NF/5NF, good decompositions and denormalization.",
    "start": "d3"
   },
   "s4": {
-   "description": "An ITI student sheet, real school data, and a suppliers table.",
+   "description": "An ITI student sheet, real school data and a suppliers table.",
    "start": "d4"
   }
  },
@@ -83,7 +84,7 @@
    "namespace": "databasecourse",
    "artifact": "https://claude.ai/artifact/WdbVXkRa43NmX6n2AKuXTF",
    "version": "1790852595-4915",
-   "copiedAt": "2026-10-01T11:19:01Z"
+   "copiedAt": "2026-10-02T17:07:48Z"
   }
  ]
 }

@@ -2,7 +2,7 @@
  "v": 4,
  "createdOnFiles": {
   "v": 1,
-  "at": "2026-10-01T11:06:36Z"
+  "at": "2026-10-02T17:07:48Z"
  },
  "lists": "css",
  "title": "Lesson 1 · Introduction to Databases",
@@ -14,6 +14,7 @@
   "d1",
   "filebased",
   "filelimits",
+  "approaches",
   "definitions",
   "dbsystem",
   "functions",
@@ -32,6 +33,7 @@
   "dw",
   "bigdata",
   "environments",
+  "tiers",
   "statement",
   "recap",
   "practice",
@@ -39,7 +41,7 @@
  ],
  "sections": {
   "s1": {
-   "description": "Why organizations moved from separate program files to a shared, managed database.",
+   "description": "Why organizations moved from program files to a shared database, what a DBMS does, and who works with it.",
    "start": "d1"
   },
   "s2": {
@@ -71,7 +73,7 @@
    "namespace": "databasecourse",
    "artifact": "https://claude.ai/artifact/WdbVXkRa43NmX6n2AKuXTF",
    "version": "1790852595-4915",
-   "copiedAt": "2026-10-01T11:06:36Z"
+   "copiedAt": "2026-10-02T17:07:48Z"
   }
  ]
 }

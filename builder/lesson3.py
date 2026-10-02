@@ -242,16 +242,16 @@ def build():
                     "…but S1 may supply Project X **only nuts**",
                     "The combined fact is **lost**: you cannot rebuild the ternary from the three pairs"]))
             + callout("Use a ternary relationship when the fact only makes sense for **all three entities together**, e.g. Quantity depends on supplier, part and project.", label="Rule:"),
-            notes="Completes the original note 'Discuss ternary relationship'. In the car case: a factory produces models and parts; if the part and the model must be produced in the same factory, a ternary FACTORY-MODEL-PART relationship (or a constraint) is needed.")
+            notes="Completes the original note 'Discuss ternary relationship'. Counter-example in the car case: 'parts made in the same factory as the model' does not need a ternary, because each model has exactly one factory (model -> factory). A ternary there would repeat the factory for every part, a 2NF violation.")
 
     d.slide("car", "Case study 1", "Car manufacturer: map it",
-            row(card("Narrative recap", size=26, items=["MODEL: unique (name, suffix), engine size", "PART: id code, description, year, **many images**",
+            row(card("Narrative recap", size=26, items=["MODEL: unique name, suffix, engine size", "PART: id code, description, year, **many images**",
                                                         "MODEL M:N PART", "Each model produced at **one** FACTORY (one per city)",
                                                         "FACTORY: machines, capacity, computer system (OS, DBMS, Internet)",
                                                         "Parts and model produced in the **same** factory"]),
                 card("Your task", tone="blue", size=26, items=["Draw the ERD (Lesson 2 method)", "Apply steps 1–7", "Underline PKs, mark FKs",
-                                                               "Decide: ternary or binary for factory–model–part?"])),
-            notes="Model answer sketch: FACTORY(_City_, Machines_no, Capacity, OS, DBMS, Internet); MODEL(_Name_, _Suffix_, Engine_size, City*); PART(_Id_code_, Description, Prod_year, City*); PART_IMAGES(_Id_code*_, _Image_); MODEL_PART(_Name*_, _Suffix*_, _Id_code*_). If the constraint 'same factory' must be enforced, discuss a ternary or a CHECK through the FK path.")
+                                                               "Ternary or two binaries? Check model → factory"])),
+            notes="Model answer: FACTORY(_City_, Machines_no, Capacity, OS, DBMS, Internet); MODEL(_Name_, Suffix, Engine_size, Factory_city*); PART(_Id_code_, Description, Prod_year); PART_IMAGES(_Id_code*_, _Image_); MODEL_PART(_Model_name*_, _Id_code*_). No ternary: each model has one factory, so 'same factory' holds automatically; the factories that make a part come from joining MODEL_PART with MODEL.")
 
     d.slide("bus", "Case study 2", "Country bus company: map it",
             row(card("Narrative recap", size=26, items=["BUS: number, chairs, options (AC, Automatic, PS), brand", "Each bus → one ROUTE; a route has many buses",

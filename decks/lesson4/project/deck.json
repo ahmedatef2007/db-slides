@@ -2,7 +2,7 @@
  "v": 4,
  "createdOnFiles": {
   "v": 1,
-  "at": "2026-10-01T11:16:06Z"
+  "at": "2026-10-02T17:07:48Z"
  },
  "lists": "css",
  "title": "Lesson 4 · SQL",
@@ -14,6 +14,7 @@
   "families",
   "transactions",
   "txexample",
+  "txstates",
   "schema",
   "datatypes",
   "d2",
@@ -63,6 +64,7 @@
   "d8",
   "dcl",
   "views",
+  "viewflow",
   "viewtypes",
   "createview",
   "checkoption",
@@ -76,11 +78,11 @@
  ],
  "sections": {
   "s1": {
-   "description": "The four families of SQL statements, transactions, schemas, data types and constraints.",
+   "description": "The four families of SQL statements, transactions, schemas and data types.",
    "start": "d1"
   },
   "s2": {
-   "description": "CREATE, ALTER, DROP and TRUNCATE.",
+   "description": "CREATE, ALTER, DROP and TRUNCATE, with constraints and foreign keys.",
    "start": "d2"
   },
   "s3": {
@@ -88,7 +90,7 @@
    "start": "d3"
   },
   "s4": {
-   "description": "SELECT, filtering, NULLs, sorting and computed columns.",
+   "description": "SELECT, DISTINCT, filtering, NULLs, sorting, computed columns and CASE.",
    "start": "d4"
   },
   "s5": {
@@ -128,7 +130,7 @@
    "namespace": "databasecourse",
    "artifact": "https://claude.ai/artifact/WdbVXkRa43NmX6n2AKuXTF",
    "version": "1790852595-4915",
-   "copiedAt": "2026-10-01T11:16:06Z"
+   "copiedAt": "2026-10-02T17:07:48Z"
   }
  ]
 }

@@ -2,7 +2,7 @@
  "v": 4,
  "createdOnFiles": {
   "v": 1,
-  "at": "2026-10-01T11:09:50Z"
+  "at": "2026-10-02T17:07:48Z"
  },
  "lists": "css",
  "title": "Lesson 2 · Entity Relationship Diagrams",
@@ -28,6 +28,7 @@
   "relattr",
   "notation",
   "crowsfoot",
+  "crowsdraw",
   "d4",
   "method",
   "company1",
@@ -48,7 +49,7 @@
  ],
  "sections": {
   "s1": {
-   "description": "What an ERD is for, and its building blocks: entities, instances and attributes.",
+   "description": "What an ERD is for, and its building blocks: entities (strong and weak), instances and attributes.",
    "start": "d1"
   },
   "s2": {
@@ -56,11 +57,11 @@
    "start": "d2"
   },
   "s3": {
-   "description": "How entities connect: degree, cardinality ratio and participation.",
+   "description": "How entities connect: degree, cardinality ratio and participation, drawn in Chen and crow's foot notation.",
    "start": "d3"
   },
   "s4": {
-   "description": "A repeatable method, applied to the COMPANY database.",
+   "description": "A repeatable method, applied to the COMPANY database, and the mistakes to avoid.",
    "start": "d4"
   },
   "s5": {
@@ -88,7 +89,7 @@
    "namespace": "databasecourse",
    "artifact": "https://claude.ai/artifact/WdbVXkRa43NmX6n2AKuXTF",
    "version": "1790852595-4915",
-   "copiedAt": "2026-10-01T11:09:50Z"
+   "copiedAt": "2026-10-02T17:07:48Z"
   }
  ]
 }
