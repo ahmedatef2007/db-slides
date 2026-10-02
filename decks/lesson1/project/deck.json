@@ -2,7 +2,7 @@
  "v": 4,
  "createdOnFiles": {
   "v": 1,
-  "at": "2026-10-01T11:12:20Z"
+  "at": "2026-10-01T11:06:36Z"
  },
  "lists": "css",
  "title": "Lesson 1 · Introduction to Databases",
@@ -71,7 +71,7 @@
    "namespace": "databasecourse",
    "artifact": "https://claude.ai/artifact/WdbVXkRa43NmX6n2AKuXTF",
    "version": "1790852595-4915",
-   "copiedAt": "2026-10-01T11:12:20Z"
+   "copiedAt": "2026-10-01T11:06:36Z"
   }
  ]
 }
