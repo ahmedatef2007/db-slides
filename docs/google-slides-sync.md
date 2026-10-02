@@ -8,10 +8,10 @@ PowerPoint files at commit `1de440f`. This lists every change made since then, a
 
 | Lesson | Google Slides ID | Status |
 | --- | --- | --- |
-| 1 | `1oxFbmVdb1cVu9SL2_K6M1sWrFxjf4w1Y9hgSYTWgPRM` | Text done. Left: bold "no fixed schema and no foreign keys" (slide `p21`, shape `p21_i6`, indexes 8–43) |
-| 2 | `1X4jHPyu0O0T5gmhCg4pUujpdqHX02DJyFnhWk5Q9ihI` | To do |
-| 3 | `1_Jc6W1PN4MZgqWMecsNq296upP43r_rzks4TeyGw0ZE` | To do |
-| 4 | `11NsjNpAkyWpkMDKh69TpNc2TRA5R0G__aoKArdGxsA8` | To do |
+| 1 | `1oxFbmVdb1cVu9SL2_K6M1sWrFxjf4w1Y9hgSYTWgPRM` | Done |
+| 2 | `1X4jHPyu0O0T5gmhCg4pUujpdqHX02DJyFnhWk5Q9ihI` | Done |
+| 3 | `1_Jc6W1PN4MZgqWMecsNq296upP43r_rzks4TeyGw0ZE` | Done |
+| 4 | `11NsjNpAkyWpkMDKh69TpNc2TRA5R0G__aoKArdGxsA8` | Done |
 | 5 | `1PN0t1OTRE26NMXrN3LQeItFmcXpvlWQg6fegUtaZS-c` | Done |
 
 The Lesson 1 Google Slides deck has an extra slide after the agenda added by the owner; leave it alone.
