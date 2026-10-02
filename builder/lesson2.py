@@ -111,13 +111,27 @@ def build():
             + callout("Store **BirthDate**, not Age: a derived attribute is computed when needed, so it never goes stale.", tone="blue", label="Tip:"),
             notes="Simple is also called single or atomic. Composite and multi-valued attributes can nest: e.g. a multi-valued composite attribute {AddressPhone(Phone, Address)}.")
 
-    d.slide("keys", "Keys", "Key attributes",
-            row(card("Simple key", size=28, body="One attribute is unique.", items=["`Ssn` of EMPLOYEE"]),
-                card("Composite key", size=28, body="A combination of attributes is unique; no part alone is.", items=["(`ID`, `Application_no`)", "Model (`Name`, `Suffix`)"]),
-                card("Candidate keys", size=28, body="An entity can have **more than one** key.", items=["EMPLOYEE: `Ssn` and `Email`", "Each key is underlined separately"]))
-            + callout("There is **no primary key in an ERD**. We pick one candidate key as the primary key later, during mapping (Lesson 3).", label="Note:")
-            + callout("An entity type with **no key** of its own is a **weak entity** type.", tone="blue"),
-            notes="If two attributes are underlined separately, then each is a key on its own. If they are joined into one composite attribute that is underlined, the combination is the key.")
+    e = ERD()
+    e.entity(400, 560, "EMPLOYEE", w=240, h=80, size=26)
+    e.attr(400, 400, "Ssn", kind="key", w=160)
+    e.line(400, 432, 400, 520)
+    e.entity(960, 560, "MODEL", w=240, h=80, size=26)
+    e.attr(960, 400, "(Name, Suffix)", kind="key", w=250)
+    e.attr(830, 300, "Name", w=150, h=56)
+    e.attr(1090, 300, "Suffix", w=150, h=56)
+    e.line(960, 432, 960, 520); e.line(870, 326, 920, 370); e.line(1050, 326, 1000, 370)
+    e.entity(1520, 560, "EMPLOYEE", w=240, h=80, size=26)
+    e.attr(1410, 400, "Ssn", kind="key", w=150)
+    e.attr(1640, 400, "Email", kind="key", w=170)
+    e.line(1430, 432, 1480, 520); e.line(1620, 432, 1560, 520)
+    labels = ""
+    for x, t, sub in ((400, "Simple key", "One attribute is unique"), (960, "Composite key", "The combination is unique; no part alone is"),
+                      (1520, "Candidate keys", "More than one key; each underlined separately")):
+        labels += pin_text(x - 270, 630, 540, t, 28, ACCENT, bold=True, align="center")
+        labels += pin_text(x - 270, 674, 540, sub, 24, BODY, align="center")
+    labels += pin_block(128, 760, 1664, callout("There is **no primary key in an ERD**. We pick one candidate key as the primary key later, during mapping (Lesson 3). An entity type with **no key** of its own is a **weak entity** type.", label="Note:", size=26))
+    d.diagram("keys", "Keys", "Key attributes", e, side=labels,
+              notes="If two attributes are underlined separately, then each is a key on its own (candidate keys). If they are joined into one composite attribute that is underlined, the combination is the key. Other composite-key example from the original: (ID, Application_no).")
 
     # ------------- Part 3 -------------
     d.divider("d3", "03", "Relationships", "How entities connect: degree, cardinality ratio and participation.")
@@ -261,10 +275,41 @@ def build():
             + callout("Example: DEPARTMENT —||————o< EMPLOYEE reads \"each employee belongs to exactly one department; a department has zero or many employees\".", tone="blue"),
             notes="New slide: students will meet crow's foot in industry and in most online tools. The circle = minimum 0, the bar = minimum/maximum 1, the crow's foot = many.")
 
+    def cf_entity(x, w, name, cols):
+        out = pin_box(x, 340, w, 64, fill=INK, text=name, text_size=26, text_color=ON_INK, font=DISPLAY)
+        out += pin_box(x, 404, w, 52 * len(cols) + 24, fill=CARD, border=INK)
+        for k, c in enumerate(cols):
+            out += pin_text(x + 20, 418 + 52 * k, w - 40, c, 24, BODY, font=MONO)
+        return out
+
+    def bars(x, y):
+        return pin_conn(x, y - 18, x, y + 18, width=3)
+
+    def foot(x_tip, y, toward):  # crow's foot that opens toward the entity edge at x_tip
+        d = 34 * toward
+        return (pin_conn(x_tip - d, y, x_tip, y - 20, width=3) + pin_conn(x_tip - d, y, x_tip, y, width=3)
+                + pin_conn(x_tip - d, y, x_tip, y + 20, width=3))
+
+    y = 470
+    art = (cf_entity(150, 380, "DEPARTMENT", ["dnumber  PK", "dname", "mgr_ssn  FK"])
+           + cf_entity(770, 380, "EMPLOYEE", ["ssn  PK", "fname", "dno  FK"])
+           + cf_entity(1390, 380, "PROJECT", ["pnumber  PK", "pname", "dnum  FK"])
+           + pin_conn(530, y, 770, y, width=3) + bars(552, y) + bars(566, y)
+           + pin_ellipse(706, y - 12, 24, 24, fill=CARD, border=INK) + foot(770, y, 1)
+           + pin_conn(1150, y, 1390, y, width=3) + bars(1172, y) + foot(1150, y, -1)
+           + bars(1368, y) + foot(1390, y, 1)
+           + pin_text(560, y - 64, 180, "works for", 24, MUTED, italic=True, align="center")
+           + pin_text(1180, y - 64, 180, "works on", 24, MUTED, italic=True, align="center")
+           + pin_block(128, 700, 1664, row(
+               callout("**DEPARTMENT ||——o< EMPLOYEE**: an employee works for exactly one department; a department has zero or many employees.", tone="blue", size=26),
+               callout("**EMPLOYEE >|——|< PROJECT**: M:N, both total. In a real schema this becomes the WORKS_ON junction table (Lesson 3).", size=26))))
+    d.slide("crowsdraw", "Notation", "Crow's foot, drawn", art,
+            notes="New diagram: the same COMPANY relationships drawn the way dbdiagram.io, draw.io or MySQL Workbench draw them. The symbol next to an entity tells how many of THAT entity relate to one instance on the other side: o< next to EMPLOYEE = a department has zero or many employees; || next to DEPARTMENT = an employee has exactly one department.")
+
     # ------------- Part 4 -------------
     d.divider("d4", "04", "Building an ERD", "A repeatable method, applied to the COMPANY database.")
 
-    d.slide("method", "Method", "From narrative to ERD in seven steps",
+    d.slide("method", "Method", "From narrative to ERD, step by step",
             grid([card(t, body=b, tag=f"{i + 1}", size=26, title_size=32) for i, (t, b) in enumerate([
                 ("Find entities", "Nouns that have their own facts: *department, project*"),
                 ("Find attributes", "Facts about a noun: *name, number, location*"),

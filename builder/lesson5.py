@@ -37,12 +37,20 @@ def build():
     # ---------- 01 ----------
     d.divider("d1", "01", "Why normalize?", "Redundancy causes anomalies; normal forms are tests that catch them.")
 
+    def flow(label, steps, tone):
+        kids = []
+        for k, t in enumerate(steps):
+            if k:
+                kids.append(arrow_right())
+            kids.append(card(t, tone=tone if k == len(steps) - 1 else "card", size=24, title_size=28))
+        return col(p(label, size=26, color=ACCENT, extra="font-weight:600"), row(*kids, gap=12), gap=12)
+
     d.slide("what", "Why normalize", "What is normalization?",
             callout("Normalization takes a table through a series of tests (**normal forms**) to certify the goodness of a design and **minimize redundancy and anomalies**.", label="Definition:", size=30)
-            + row(card("Top-down design", size=26, body="Conceptual model first (ERD), then map to tables (Lessons 2–3).",
-                       items=["Normalization **checks** the result", "Most common in practice"]),
-                  card("Bottom-up design", size=26, body="Start from attributes and their relationships (e.g. existing forms, files, spreadsheets).",
-                       items=["Normalization **builds** the tables", "Typical for legacy data"])),
+            + flow("Top-down design: normalization checks the result (most common)",
+                   ["Requirements", "ERD", "Map to tables", "Check with normal forms"], "blue")
+            + flow("Bottom-up design: normalization builds the tables (legacy forms, files, spreadsheets)",
+                   ["Existing forms & files", "Attributes + FDs", "Normalize step by step", "Tables in 3NF"], "blue"),
             notes="Normalization plays a limited role when the top-down (ERD) approach is used, and a major role in the bottom-up approach, where it is essential to build appropriate relations.")
 
     d.slide("anomalies", "Why normalize", "Redundancy causes anomalies",
@@ -224,6 +232,19 @@ def build():
                 card("Dependency preservation (desired)", size=26, body="Every FD can still be checked **inside one table**.",
                      items=["3NF can always keep both properties", "BCNF sometimes must give this up (TEACH example)"])),
             notes="New slide: explains why normalization splits tables in a specific way (Guideline 4: no spurious tuples).")
+
+    d.slide("decompex", "Normal forms", "Lossless vs lossy: one table, two splits",
+            schema_line("STUDENT", ["_Stud_ID_", "Level", "Level_Mgr"], size=30)
+            + p("FDs: Stud_ID → Level, Level → Level_Mgr", size=26, color=MUTED)
+            + row(box([eyebrow("Lossless split"),
+                       schema_line("STUDENT", ["_Stud_ID_", "Level*"], size=26),
+                       schema_line("LEVEL", ["_Level_", "Level_Mgr"], size=26),
+                       p("Common column **Level** is the key of LEVEL: joining gives back exactly the original rows.", size=26)], tone="blue"),
+                  box([eyebrow("Lossy split"),
+                       schema_line("R1", ["_Stud_ID_", "Level_Mgr"], size=26),
+                       schema_line("R2", ["_Level_", "Level_Mgr"], size=26),
+                       p("Common column **Level_Mgr** is not a key of either table: one manager runs two levels, so the join **invents** rows (spurious tuples).", size=26)]), gap=24),
+            notes="New worked example for the decomposition properties. Test: a binary decomposition of R into R1 and R2 is lossless if the common attributes functionally determine R1 or R2 (they are a key of one side). Example of the lossy case: if Noha manages both Primary and Preparatory, joining R1 and R2 on Level_Mgr pairs every Noha student with both levels.")
 
     d.slide("denorm", "Normal forms", "Denormalization",
             row(card("What", size=28, body="Deliberately storing the **join** of normalized tables, or a derived value, as a base table (a lower normal form)."),

@@ -15,7 +15,10 @@ def build():
     def code_result(sid, eyebrow, title, code, headers, rows_, widths=None, caption="Result", notes="", size=26, intro=None):
         res = col(p(caption, size=24, color=MUTED, extra="font-weight:600;text-transform:uppercase;letter-spacing:2px"),
                   table(headers, rows_, widths=widths, size=24), gap=12, flex="1")
-        body = (p(intro, size=28) if intro else "") + row(code_block(code, size=size, flex="1"), res, gap=32)
+        if len(headers) >= 5:  # wide results read better under the query
+            body = (p(intro, size=28) if intro else "") + code_block(code, size=size) + res
+        else:
+            body = (p(intro, size=28) if intro else "") + row(code_block(code, size=size, flex="1"), res, gap=32)
         d.slide(sid, eyebrow, title, body, notes=notes, gap=32)
 
     d.cover("cover", "Structured Query Language",
@@ -64,6 +67,26 @@ COMMIT;     -- make both changes permanent
               [card("Why both or none?", body="If the system crashes after the first UPDATE, 500 would vanish. The transaction guarantees **atomicity**.", size=26),
                callout("Oracle starts a transaction automatically with the first DML; SQL Server and PostgreSQL run each statement alone (**autocommit**) unless you BEGIN.", tone="blue", size=24)],
               notes="New slide: the original defined transactions but never showed COMMIT/ROLLBACK.")
+
+    e = ERD()
+    for cx, cy, t in ((420, 580, "Active"), (900, 400, "Partially committed"), (1460, 400, "Committed"),
+                      (900, 760, "Failed"), (1460, 760, "Aborted (rolled back)")):
+        e.entity(cx, cy, t, w=360 if len(t) > 12 else 260, h=90, size=26)
+    e.line(170, 580, 288, 580, head="end", color=BLUE)
+    e.line(550, 545, 718, 430, head="end")
+    e.line(1080, 400, 1328, 400, head="end", color=BLUE)
+    e.line(550, 615, 768, 735, head="end", color=ACCENT)
+    e.line(900, 445, 900, 715, head="end", color=ACCENT)
+    e.line(1030, 760, 1278, 760, head="end", color=ACCENT)
+    lab = (pin_text(150, 520, 140, "BEGIN", 24, BLUE, bold=True)
+           + pin_text(420, 430, 300, "last statement done", 24, MUTED, italic=True)
+           + pin_text(1110, 340, 220, "COMMIT", 24, BLUE, bold=True, align="center")
+           + pin_text(390, 700, 300, "error / crash", 24, ACCENT, italic=True)
+           + pin_text(920, 560, 260, "write fails", 24, ACCENT, italic=True)
+           + pin_text(1080, 800, 240, "ROLLBACK", 24, ACCENT, bold=True, align="center")
+           + pin_text(128, 880, 1664, "Only **Committed** changes are permanent (durability); everything an **Aborted** transaction did is undone (atomicity).", 26, BODY))
+    d.diagram("txstates", "Transactions", "The life of a transaction", e, side=lab,
+              notes="New diagram (state diagram from Elmasri & Navathe, chapter 20). A transaction starts Active, becomes Partially committed after its last operation, and Committed once its changes are safely recorded. Any failure moves it to Failed, after which the DBMS rolls it back (Aborted) so the database returns to its state before the transaction.")
 
     code_side("schema", "Foundations", "Database schema",
               """CREATE SCHEMA hr AUTHORIZATION ahmed;
@@ -164,7 +187,7 @@ DROP TABLE department CASCADE;              -- PostgreSQL""",
                   [["Family", "DML", "DDL", "DDL"],
                    ["Removes", "Chosen rows (WHERE)", "All rows", "Rows + the table itself"],
                    ["WHERE clause", "Yes", "No", "No"],
-                   ["Rollback", "Yes, until COMMIT", "Oracle, MySQL: no (auto-commit). SQL Server, PostgreSQL: yes inside a transaction", "Generally no"],
+                   ["Rollback", "Yes, until COMMIT", "Oracle, MySQL: no (auto-commit). SQL Server, PostgreSQL: yes inside a transaction", "Same as TRUNCATE"],
                    ["Speed on big tables", "Slower (row by row, logged)", "Fast (deallocates pages)", "Fast"],
                    ["Fires DELETE triggers", "Yes", "No", "No"]],
                   widths=[22, 24, 34, 20], size=24),
@@ -182,7 +205,7 @@ VALUES (1, 'Ahmed', 'Saleh', 'ahmed@iti.eg', 'Alex', '2003-05-14', 3.40);
 INSERT INTO students (id, first_name, last_name)
 VALUES (2, 'Mona', 'Hassan');
 
--- several rows at once
+-- several rows at once (Oracle: 23ai and later)
 INSERT INTO students (id, first_name, last_name) VALUES
   (3, 'Ali', 'Samir'), (4, 'Mai', 'Adel');
 
@@ -237,7 +260,7 @@ UPDATE employee SET salary = 0;""",
                     p("After", size=24, color=MUTED, extra="font-weight:600"),
                     table(["store_name", "sales", "sale_date"], [["San Diego", "250", "1999-01-07"], ["Boston", "700", "1999-01-08"]], size=24),
                     flex="1", gap=10), gap=32)
-            + callout("Without WHERE, DELETE removes **all rows** (the table stays). Deleting a parent row fails if child rows reference it, unless the FK says ON DELETE CASCADE.", size=26),
+            + callout("Without WHERE, DELETE removes **all rows** (the table stays). Deleting a parent row fails if child rows reference it, unless the FK says ON DELETE CASCADE (or SET NULL).", size=26),
             gap=32)
 
     # ---------------- 04 SELECT ----------------
@@ -293,7 +316,7 @@ SELECT fname         FROM employee WHERE fname LIKE '_s%';   -- 2nd letter is s"
             row(col(card(None, size=28, items=["NULL means *unknown* or *not applicable*, not 0 or ''",
                                                "Any comparison with NULL is **UNKNOWN**, so the row is filtered out",
                                                "Use **IS NULL / IS NOT NULL**, never = NULL",
-                                               "`COALESCE(x, 0)` replaces NULL with a default"]), flex="1"),
+                                               "`COALESCE(x, default)` replaces NULL with a default"]), flex="1"),
                 code_block("""-- employees with no supervisor
 SELECT fname FROM employee
 WHERE  super_ssn IS NULL;
@@ -302,7 +325,7 @@ WHERE  super_ssn IS NULL;
 SELECT fname FROM employee
 WHERE  super_ssn = NULL;
 
-SELECT fname, COALESCE(commission, 0)
+SELECT fname, COALESCE(super_ssn, 'none')
 FROM   employee;""", size=26, flex="1"), gap=32),
             notes="New slide: NULL handling was missing from the original and causes many real bugs. Also warn: NOT IN (subquery) returns no rows if the subquery returns a NULL; prefer NOT EXISTS.")
 
@@ -367,14 +390,37 @@ FROM   employee;""",
     # ---------------- 05 joins ----------------
     d.divider("d5", "05", "Joining tables", "Combine rows from several tables: inner, outer, self, non-equi and cross joins.")
 
-    d.slide("jointypes", "Joins", "Types of join",
-            grid([card("INNER JOIN", body="Only rows with a **match in both** tables.", tone="blue", size=26),
-                  card("LEFT OUTER JOIN", body="All rows of the **left** table + matches; NULLs where none.", size=26),
-                  card("RIGHT OUTER JOIN", body="All rows of the **right** table + matches; NULLs where none.", size=26),
-                  card("FULL OUTER JOIN", body="**All rows of both** tables, matched where possible, NULLs elsewhere.", size=26),
-                  card("CROSS JOIN", body="Cartesian product: **every** row with **every** row.", size=26),
-                  card("SELF JOIN", body="A table joined to **itself** using two aliases.", size=26)], cols=3),
-            notes="Fixed: the original defined FULL JOIN as 'Return rows when there is a match in one of the tables'. A FULL OUTER JOIN returns all rows from both tables: matched pairs, plus unmatched rows from each side padded with NULLs.")
+    def venn(cx, top, fill_left, fill_right, fill_lens, la="A", lb="B"):
+        r, dx = 92, 56
+        out = ""
+        lx, rx, cy = cx - dx, cx + dx, top + 110
+        if fill_left:
+            out += pin_ellipse(lx - r, cy - r, 2 * r, 2 * r, fill=BLUE_TINT)
+        if fill_right:
+            out += pin_ellipse(rx - r, cy - r, 2 * r, 2 * r, fill=BLUE_TINT)
+        if fill_lens:
+            out += pin_ellipse(cx - 37, cy - 74, 74, 148, fill=BLUE)
+        out += pin_ellipse(lx - r, cy - r, 2 * r, 2 * r, border=INK, border_w=3)
+        out += pin_ellipse(rx - r, cy - r, 2 * r, 2 * r, border=INK, border_w=3)
+        out += pin_text(lx - r + 14, cy - 18, 60, la, 28, INK, bold=True)
+        out += pin_text(rx + r - 74, cy - 18, 60, lb, 28, INK, bold=True, align="right")
+        return out
+
+    cells = [("INNER JOIN", "Only rows with a **match in both** tables.", (False, False, True)),
+             ("LEFT OUTER JOIN", "All rows of the **left** table + matches; NULLs where none.", (True, False, True)),
+             ("RIGHT OUTER JOIN", "All rows of the **right** table + matches; NULLs where none.", (False, True, True)),
+             ("FULL OUTER JOIN", "**All rows of both** tables, matched where possible, NULLs elsewhere.", (True, True, True))]
+    art = ""
+    for k, (t, desc, fills) in enumerate(cells):
+        cx = 128 + 208 + k * 416
+        art += venn(cx, 300, *fills)
+        art += pin_text(cx - 196, 540, 392, t, 30, INK, bold=True, align="center", font=DISPLAY)
+        art += pin_text(cx - 196, 588, 392, desc, 26, BODY, align="center")
+    art += pin_block(128, 720, 1664, row(
+        card("CROSS JOIN", body="Cartesian product: **every** row with **every** row (m × n rows).", size=26),
+        card("SELF JOIN", body="A table joined to **itself** using two aliases, e.g. employee e, employee s.", size=26)))
+    d.slide("jointypes", "Joins", "Types of join", art,
+            notes="Fixed: the original defined FULL JOIN as 'Return rows when there is a match in one of the tables'. A FULL OUTER JOIN returns all rows from both tables: matched pairs, plus unmatched rows from each side padded with NULLs. In the diagrams, the shaded area is what the join returns: A is the left table, B the right one, and the middle is the matched rows.")
 
     d.slide("innerjoin", "Joins", "Inner join: two syntaxes",
             p("Retrieve the name and address of employees who work for the **Research** department.", size=28)
@@ -397,7 +443,7 @@ WHERE  d.dname = 'Research';""", size=26), gap=12), gap=32)
 SELECT d.name AS department, e.id, e.name, e.salary
 FROM   department d
 JOIN   employee   e ON d.id = e.dept_id
-ORDER  BY d.name;""",
+ORDER BY d.name;""",
               [card(None, body="When two tables share a column name, **prefix** it: `department.name` or with an alias `d.name`.", size=28),
                callout("Prefixing **every** column makes queries easier to read and avoids errors when a new column is added.", tone="blue", size=26)],
               notes="The original claimed prefixing improves performance; the main benefit is clarity and avoiding ambiguity errors.")
@@ -539,7 +585,7 @@ SELECT dnumber FROM department
 WHERE  mgr_ssn = '333445555'
 UNION
 SELECT dnumber FROM dept_locations
-WHERE  dlocation = 'Giza';""", size=24, flex="1"), gap=32)
+WHERE  dlocation = 'Giza';""", size=24, flex="2"), gap=32)
             + callout("Both queries need the **same number of columns** with **compatible types**; the result uses the column names of the **first** query.", tone="blue", size=26),
             notes="Completes the original, which covered only UNION and UNION ALL. Example 2 from the original: SELECT name FROM employees UNION SELECT name FROM employees_retired (current and previous employees).")
 
@@ -575,7 +621,7 @@ FROM   employee e
 JOIN   department d ON d.dnumber = e.dno
 WHERE  d.dname = 'Research';""",
               [card(None, body="Aggregates take **many rows** and return **one value** per group: COUNT, SUM, AVG, MIN, MAX.", size=26),
-               callout("They **ignore NULLs**: COUNT(*) counts rows, COUNT(col) counts non-null values. AVG(commission) ignores employees with no commission.", size=26)],
+               callout("They **ignore NULLs**: COUNT(*) counts rows, COUNT(col) counts only non-null values (8 employees, but COUNT(super_ssn) = 7).", size=26)],
               size=24)
 
     code_result("groupby", "Aggregation", "GROUP BY",
@@ -638,6 +684,22 @@ GRANT hr_reader TO ahmed;""",
                 card("Why use views", tone="blue", size=28, items=["**Restrict access**: show only some columns or rows", "**Simplify** complex joins for users",
                                                                    "**Data independence**: apps survive table changes", "**Different views** of the same data per user group"])),
             notes="Views are the main tool for the external level of the three-schema architecture (Lesson 1) and for logical data independence.")
+
+    e = ERD()
+    for y, t in ((400, "EMPLOYEE"), (560, "WORKS_ON"), (720, "PROJECT")):
+        e.entity(330, y, t, w=280, h=80, size=26)
+        e.line(470, y, 718, 560, head="end")
+    for y, t in ((400, "HR application"), (560, "Monthly report"), (720, "Ad-hoc query")):
+        e.attr(1590, y, t, w=300, h=80, size=26)
+        e.line(1202, 560, 1438, y, head="end", color=BLUE)
+    side = (pin_box(720, 480, 480, 160, fill=ACCENT_TINT, border=ACCENT, dashed=True, border_w=3, radius=16)
+            + pin_text(740, 505, 440, "vw_work_hrs", 30, INK, bold=True, align="center", font=MONO)
+            + pin_text(740, 560, 440, "stored SELECT, no rows of its own", 24, BODY, align="center")
+            + pin_text(190, 300, 300, "Base tables", 26, MUTED, bold=True, align="center")
+            + pin_text(1440, 300, 300, "Users", 26, MUTED, bold=True, align="center")
+            + pin_text(128, 830, 1664, "Every time the view is queried, the DBMS runs its SELECT against the **base tables**: the data is always current.", 26, BODY))
+    d.diagram("viewflow", "Views", "How a view works", e, side=side,
+              notes="New diagram. The view holds only its query (in the data dictionary). Users and applications query the view like a table; the DBMS merges their query with the view's SELECT and reads the base tables.")
 
     d.slide("viewtypes", "Views", "Simple vs complex views",
             table(["Feature", "Simple view", "Complex view"],

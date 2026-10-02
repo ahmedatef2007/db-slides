@@ -48,7 +48,7 @@ BOTTOM = 1016
 LECTURER = ("Lecturer: Rana Salah", "rsalah@mcit.gov.eg · Room 3005")
 CREDITS = ("Based on original slides by", "Shahinaz S. Azab · edited by Mona Saleh · Rana Salah")
 
-EM = {SANS: 0.46, DISPLAY: 0.51, MONO: 0.6}
+EM = {SANS: 0.46, DISPLAY: 0.49, MONO: 0.6}
 
 
 def rgb(h):
@@ -95,8 +95,7 @@ def text_lines(text, font, sz, w):
         if f.get("b"):
             em *= 1.06
         width += len(t) * em * sz
-    words = max(1, len(text.split()))
-    return max(1, math.ceil(width * 1.06 / w + (0.15 if words > 3 else 0)))
+    return max(1, math.ceil(width * 1.05 / w))
 
 
 def set_run(run, text, size, color, font, bold=False, italic=False, underline=False, code=False):
@@ -370,13 +369,25 @@ class Row(Node):
     def __init__(self, children, gap=24, align="stretch"):
         self.children, self.gap, self.align = flatten(children), gap, align
 
-    def widths(self, w, s):
+    def _flex_widths(self, w, s):
         g = self.gap * s * max(0, len(self.children) - 1)
         fixed = sum(c.width for c in self.children if c.width)
         flexes = [float(str(c.flex).split()[0]) if not c.width else 0 for c in self.children]
         tot = sum(flexes) or 1
         free = max(0, w - g - fixed)
         return [c.width if c.width else free * f / tot for c, f in zip(self.children, flexes)]
+
+    def widths(self, w, s):
+        ws = self._flex_widths(w, s)
+        # tables never get narrower than their longest words need; take the room from the others
+        need = [c.min_width(s) if hasattr(c, "min_width") else 0 for c in self.children]
+        short = sum(max(0, n - x) for n, x in zip(need, ws))
+        if short > 0:
+            spare = [x if not n and not c.width else 0 for c, x, n in zip(self.children, ws, need)]
+            tot = sum(spare) or 1
+            ws = [max(n, x) if n else x - short * sp / tot
+                  for c, x, n, sp in zip(self.children, ws, need, spare)]
+        return ws
 
     def measure(self, w, s):
         return max([c.measure(cw, s) for c, cw in zip(self.children, self.widths(w, s))] + [0])
@@ -385,7 +396,7 @@ class Row(Node):
         cx = x
         for c, cw in zip(self.children, self.widths(w, s)):
             ch = c.measure(cw, s)
-            if self.align == "center":
+            if self.align == "center" or isinstance(c, Arrow):
                 c.draw(sl, cx, y + (h - ch) / 2, cw, ch, s)
             else:
                 c.draw(sl, cx, y, cw, h if isinstance(c, (Box, Col)) else ch, s)
@@ -409,6 +420,13 @@ class Col(Node):
             ch = c.measure(w, s)
             c.draw(sl, x, cy, w, ch, s)
             cy += ch + self.gap * s
+
+
+def _col_min_width(self, s):
+    return max([c.min_width(s) for c in self.children if hasattr(c, "min_width")] + [0])
+
+
+Col.min_width = _col_min_width
 
 
 def col(*children, gap=24, flex="1"):
@@ -460,10 +478,19 @@ class Table(Node):
         n = len(headers)
         self.pct = widths or [100 / n] * n
         self.size = size
-        self.flex = str(n)  # beside other nodes, a table takes space by its column count
+        self.flex = str(max(1.0, n * 0.7))  # beside other nodes, a table takes space by its column count
 
     def sz(self, s):
         return max(17, self.size * FS * s)
+
+    def min_width(self, s):
+        sz = self.sz(s)
+        tot = 0
+        for k, p_ in enumerate(self.pct):
+            words = [x for r in [self.headers] + self.rows for x in plain(r[k]).split()] or [""]
+            col_need = max(len(x) for x in words) * EM[SANS] * 1.15 * sz + sz * 1.2
+            tot = max(tot, col_need / (p_ / 100))
+        return tot
 
     def row_heights(self, w, s):
         sz = self.sz(s)
@@ -539,7 +566,10 @@ def sql_tokens(line):
 class Code(Node):
     def __init__(self, code, size=26, flex=None, width=None, plain=False):
         self.lines = code.strip("\n").split("\n")
-        self.size, self.flex, self.width, self.plain = size, flex or "1", width, plain
+        longest = max(len(l) for l in self.lines)
+        self.size, self.width, self.plain = size, width, plain
+        # beside other nodes, code takes room in proportion to its longest line
+        self.flex = flex if flex not in (None, "1") else str(max(1.0, longest / 24))
         self.pad = 28
 
     def sz(self, w, s):
@@ -1066,3 +1096,16 @@ class Deck:
                 sl.notes_slide.notes_text_frame.text = notes.strip()
         prs.save(out_path)
         return total
+
+
+class PinEllipse(Pin):
+    def __init__(self, *a):
+        self.a = a
+
+    def draw(self, sl, *_):
+        x, y, w, h, fill, border, bw, dashed = self.a
+        rect(sl, x, y, w, h, fill=fill, line=border, line_w=bw, dash=dashed, shape=MSO_SHAPE.OVAL)
+
+
+def pin_ellipse(x, y, w, h, fill=None, border=None, border_w=3, dashed=False):
+    return PinEllipse(x, y, w, h, fill, border, border_w, dashed)

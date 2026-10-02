@@ -492,3 +492,11 @@ def box(children, tone=None, flex="1", pad="24px 32px", gap=8):
 def key_legend():
     return (f'<p style="font-size:24px;line-height:1.45;color:{MUTED}"><u><b>underlined</b></u> = primary key · '
             f'<span style="color:{BLUE}"><i>blue italic</i></span> = foreign key</p>')
+
+
+def pin_ellipse(x, y, w, h, fill=None, border=None, border_w=3, dashed=False):
+    st = f"position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px"
+    st += f";background:{fill}" if fill else ";background:transparent"
+    if border:
+        st += f";border:{border_w}px {'dashed' if dashed else 'solid'} {border}"
+    return f'<x-shape kind="ellipse" style="{st}"></x-shape>'

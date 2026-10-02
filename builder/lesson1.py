@@ -9,7 +9,7 @@ def build():
             ["File systems vs DBMS", "Three-schema architecture", "Data models", "NoSQL", "Big Data", "Environments"],
             notes="Welcome. This lesson sets the vocabulary we use for the whole course: database, DBMS, schema, data model, data independence.")
 
-    d.slide("course", "The course", "Five lessons, one running example",
+    d.slide("course", "The course", "Five lessons, from data to SQL",
             table(["Lesson", "Topic", "You will be able to"],
                   [["1", "Introduction to databases", "Explain what a DBMS does and why we use one"],
                    ["2", "Entity Relationship Diagrams", "Model a business narrative as an ERD"],
@@ -19,8 +19,8 @@ def build():
                   widths=[12, 34, 54], size=28)
             + row(card("Time", body="15 hours of lectures · 12 hours of labs", icon="Clock", size=28),
                   card("Grading", body="Assignments and labs **40%** · Final exam **60%**", icon="Check", size=28),
-                  card("Running example", body="The **COMPANY** database: employees, departments, projects, dependents.", icon="Database", size=28)),
-            notes="Running example: we reuse the COMPANY database (from Elmasri & Navathe) in every lesson, so students see one design travel from narrative -> ERD -> tables -> SQL -> normalization.")
+                  card("Running examples", body="The **COMPANY** database plus ITI student and course data.", icon="Database", size=28)),
+            notes="Running examples: the COMPANY database (from Elmasri & Navathe) appears in Lessons 2, 4 and 5; Lesson 3 maps ITI student, instructor and course examples. Students see the same kind of design travel from narrative -> ERD -> tables -> SQL -> normalization.")
 
     d.slide("objectives", "Lesson 1", "By the end of this lesson you can",
             grid([card(None, body=t, tag=f"{i + 1:02d}", size=30) for i, t in enumerate([
@@ -50,6 +50,25 @@ def build():
                   card("No integrity rules", body="Nothing stops a negative salary or an order for a customer who does not exist."),
                   card("No concurrency or recovery", body="Two users updating the same file at once, or a crash mid-write, can corrupt data.")], cols=3),
             notes="The last two cards are additions that complete the picture: the DBMS functions on the next slides answer each of these six problems one by one.")
+
+    e = ERD()
+    for cx, prog, f in ((250, "Sales app", "sales.dat"), (515, "Billing app", "billing.csv"), (780, "HR app", "hr.xls")):
+        e.entity(cx, 420, prog, w=230, h=76, size=24)
+        e.attr(cx, 600, f, w=220, h=70)
+        e.line(cx, 458, cx, 565, head="end")
+    for cx, prog in ((1120, "Sales app"), (1405, "Billing app"), (1690, "HR app")):
+        e.entity(cx, 420, prog, w=230, h=76, size=24)
+        e.line(cx, 458, 1405 + (cx - 1405) // 3, 562, head="end")
+    e.entity(1405, 600, "DBMS", w=520, h=76)
+    e.entity(1405, 760, "One shared database + catalog", w=520, h=76, size=24)
+    e.line(1405, 638, 1405, 722, head="end")
+    side = (pin_text(128, 300, 780, "File-based", 30, ACCENT, bold=True)
+            + pin_text(1000, 300, 792, "Database approach", 30, BLUE, bold=True)
+            + pin_box(950, 300, 2, 560, fill=LINE)
+            + pin_text(128, 680, 780, "Each program defines its **own** file: the same data is stored three times, in three formats.", 26, BODY)
+            + pin_text(1000, 830, 792, "Programs ask the DBMS; the data and its description are stored **once**.", 26, BODY))
+    d.diagram("approaches", "Files to databases", "File-based vs database approach", e, side=side,
+              notes="New diagram: the same three applications before and after a DBMS. Point at the duplicated customer data on the left and the single shared database on the right; every limitation on the previous slide disappears because the DBMS sits in the middle.")
 
     d.slide("definitions", "Basic definitions", "Database, DBMS, database system",
             row(card("Database", body="A collection of **related data** with a meaning, e.g. all students, courses and grades of a university.", icon="Database", size=30),
@@ -139,18 +158,32 @@ def build():
             + callout("**Mappings** translate a request from one level to the next (e.g. a view query → a query on base tables → page reads). They cost time, which is why some systems collapse levels.", tone="blue"),
             notes="External: deals with how users access the schema, e.g. a data input form or a view. Conceptual: the basic database model with tables and constraints. Internal: physical storage, files and indexes; it hides hardware and OS details from the data model.")
 
-    d.slide("independence", "Architecture", "Data independence",
-            p("The capacity to change the schema at one level **without changing the level above it**.", size=34, color=INK)
-            + row(card("Logical data independence", size=28, body="Change the **conceptual** schema without changing external schemas or programs.",
-                       items=["Add a column `Email` to EMPLOYEE", "Split a table; old views still work"]),
-                  card("Physical data independence", size=28, body="Change the **internal** schema without changing the conceptual schema.",
-                       items=["Add an index on `Salary`", "Move data files to a faster disk"])),
-            notes="Completed: the original slide named the two types but only defined physical data independence. Logical independence is harder to achieve because programs depend on the structure they query; views are the main tool for it.")
+    e = ERD()
+    for y, t in ((420, "External schemas (views)"), (600, "Conceptual schema"), (780, "Internal schema")):
+        e.entity(660, y, t, w=480, h=86, size=26)
+    e.line(660, 463, 660, 557)
+    e.line(660, 643, 660, 737)
+    side = (pin_text(128, 290, 1664, "The capacity to change the schema at one level **without changing the level above it**.", 30, INK)
+            + pin_conn(400, 425, 400, 595, head="both", color=BLUE, width=4)
+            + pin_text(128, 470, 260, "Logical independence", 26, BLUE, bold=True, align="right")
+            + pin_conn(400, 605, 400, 775, head="both", color=ACCENT, width=4)
+            + pin_text(128, 650, 260, "Physical independence", 26, ACCENT, bold=True, align="right")
+            + pin_block(1000, 380, 792, col(
+                card("Logical data independence", size=26, title_size=32, tone="blue",
+                     body="Change the **conceptual** schema; external schemas and programs keep working.",
+                     items=["Add a column `Email` to EMPLOYEE", "Split a table; old views still work"]),
+                card("Physical data independence", size=26, title_size=32, tone="accent",
+                     body="Change the **internal** schema; the conceptual schema stays the same.",
+                     items=["Add an index on `Salary`", "Move data files to a faster disk"]), gap=20)))
+    d.diagram("independence", "Architecture", "Data independence", e, side=side,
+              notes="Completed: the original slide named the two types but only defined physical data independence. Logical independence is harder to achieve because programs depend on the structure they query; views are the main tool for it. The arrows show where each kind of independence protects the level above.")
 
     d.slide("models", "Data models", "Three kinds of data models",
             row(card("Conceptual (high level)", tag="Lesson 2", size=28, body="Close to how users think: **entities, attributes, relationships**.", items=["Example: an ERD"]),
+                arrow_right(),
                 card("Logical (representational)", tag="Lesson 3", size=28, body="How data is organized for a DBMS, independent of storage.", items=["Example: the relational model (tables)", "Others: document, graph"]),
-                card("Physical (low level)", tag="Lesson 4", size=28, body="How data is stored on disk and the **access paths** to find it.", items=["Example: files, pages, indexes"]))
+                arrow_right(),
+                card("Physical (low level)", tag="Lesson 4", size=28, body="How data is stored on disk and the **access paths** to find it.", items=["Example: files, pages, indexes"]), gap=16)
             + callout("A **data model** is a set of concepts used to describe the structure of a database, the relationships in it and the constraints on it.", tone="blue"),
             notes="Completed: the original showed only conceptual and physical models. The logical (representational / implementation) level, e.g. the relational model, is the bridge we will use when mapping ERDs to tables in Lesson 3.")
 
@@ -206,13 +239,13 @@ def build():
             notes="Completed: the original slide had only the title 'Data Warehouse'. Examples of products: Snowflake, Google BigQuery, Amazon Redshift, Azure Synapse.")
 
     d.slide("bigdata", "Beyond relational", "Big Data",
-            callout("Data whose scale, distribution, diversity and/or timeliness require new technical architectures and analytics to unlock new sources of business value.", label="Definition:", size=30)
+            callout("\u201cDatasets whose size is beyond the ability of typical database software tools to capture, store, manage, and analyze.\u201d", label="Definition:", size=30)
             + row(card("Volume", body="Terabytes to petabytes: more than one server can store or process.", icon="Database", size=28),
                   card("Velocity", body="Data arrives fast and continuously: clicks, sensors, transactions.", icon="Lightning", size=28),
                   card("Variety", body="Structured tables, text, images, video, logs, JSON.", icon="Star", size=28))
             + p("Two more Vs are often added: **Veracity** (can we trust it?) and **Value** (is it worth it?).", size=28)
             + p("Source of the definition: McKinsey Global Institute, *Big data: The next frontier for innovation, competition, and productivity*, May 2011.", size=24, color=MUTED),
-            notes="Typical tools: Hadoop/HDFS and Spark for processing, data lakes on cloud object storage, streaming with Kafka.")
+            notes="Fixed: the original slide attributed a different definition ('data whose scale, distribution, diversity and/or timeliness require new technical architectures...') to this McKinsey report; the quote now on the slide is the report's own definition. Typical tools: Hadoop/HDFS and Spark for processing, data lakes on cloud object storage, streaming with Kafka.")
 
     d.slide("environments", "Beyond relational", "Where databases run",
             grid([card("Centralized / mainframe", body="One powerful machine; users connect from terminals."),
@@ -222,6 +255,23 @@ def build():
                   card("Cloud (DBaaS)", body="A managed service: the provider runs backups, patching and scaling, e.g. Amazon RDS, Azure SQL, Cloud SQL."),
                   card("Embedded", body="The database is a library inside the app: SQLite in every phone and browser.")], cols=3),
             notes="Updated: added cloud DBaaS and embedded databases, which are where most new databases run today. Mainframe: a powerful machine networked with dumb terminals. Client/server: a server holds the database, each user has a PC. Internet computing: the application is installed on a web server; users need only a browser.")
+
+    e = ERD()
+    for cx in (230, 450, 670):
+        e.entity(cx, 420, "Client PC", w=190, h=72, size=24)
+        e.line(cx, 456, 450 + (cx - 450) // 3, 646, head="end")
+    e.entity(450, 690, "Database server", w=420, h=86)
+    for y, t in ((400, "Browser"), (570, "Web / application server"), (740, "Database server")):
+        e.entity(1400, y, t, w=520, h=86)
+    e.line(1400, 443, 1400, 527, head="both")
+    e.line(1400, 613, 1400, 697, head="both")
+    side = (pin_text(128, 300, 700, "Two-tier (client/server)", 30, ACCENT, bold=True)
+            + pin_text(1000, 300, 792, "Three-tier (web)", 30, BLUE, bold=True)
+            + pin_box(900, 300, 2, 600, fill=LINE)
+            + pin_text(128, 770, 720, "Each PC runs the application and talks to the database directly.", 26, BODY)
+            + pin_text(1000, 820, 792, "Only the server runs the application; users need just a browser. The database is never exposed to the internet.", 26, BODY))
+    d.diagram("tiers", "Beyond relational", "Two-tier vs three-tier", e, side=side,
+              notes="New diagram for the 'Database environment' part of the original course. Mainframe: terminals talk to one powerful machine. Client/server: the database lives on a server and each PC runs the client. Internet computing: the application is installed on one web server; users only need a browser.")
 
     d.statement("statement", "A DBMS separates **what** the data means from **how** it is stored.",
                 "Everything in this course builds on that idea: we design the meaning (ERD, tables, normalization) and let the DBMS handle storage.")
