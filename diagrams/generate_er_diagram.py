@@ -44,7 +44,7 @@ EMP, DEP, PRJ, DPT = (300, 230), (1000, 230), (1000, 560), (560, 810)
 WF, MG, CT, WO, SV, DO = (680, 115), (680, 250), (1000, 395), (680, 470), (230, 490), (560, 650)
 
 # relationship lines (drawn under shapes)
-line(EMP, WF, double=True); line(WF, DEP)
+line(EMP, WF, double=True); line(WF, DEP, double=True)
 line(EMP, MG); line(MG, DEP, double=True)
 line(DEP, CT); line(CT, PRJ, double=True)
 line(EMP, WO, double=True); line(WO, PRJ, double=True)
