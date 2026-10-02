@@ -32,7 +32,7 @@ def build():
                 "Place **NoSQL, data warehouses and Big Data** on the map"])], cols=3))
 
     # ---------------- Part 1 ----------------
-    d.divider("d1", "01", "From files to databases", "Why organizations moved from separate program files to a shared, managed database.")
+    d.divider("d1", "01", "From files to databases", "Why organizations moved from program files to a shared database, what a DBMS does, and who works with it.")
 
     d.slide("filebased", "Files to databases", "The file-based approach",
             p("Each program defines and manages **its own data files**. It worked when computers ran one job at a time.")

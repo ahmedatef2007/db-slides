@@ -35,7 +35,7 @@ def build():
                 "Use **views, indexes** and **GRANT/REVOKE**"])], cols=3))
 
     # ---------------- 01 foundations ----------------
-    d.divider("d1", "01", "SQL foundations", "The four families of SQL statements, transactions, schemas, data types and constraints.")
+    d.divider("d1", "01", "SQL foundations", "The four families of SQL statements, transactions, schemas and data types.")
 
     d.slide("families", "Foundations", "Four families of SQL statements",
             grid([card("DDL", body="Data **Definition**: structure", items=["CREATE", "ALTER", "DROP", "TRUNCATE"], tone="blue", size=28),
@@ -112,7 +112,7 @@ SELECT * FROM hr.employee;""",
             notes="Updated: the original only listed alphanumeric, numeric and date/time. The examples in the original used CHAR(50) for names; VARCHAR is the better default.")
 
     # ---------------- 02 DDL ----------------
-    d.divider("d2", "02", "Defining structure (DDL)", "CREATE, ALTER, DROP and TRUNCATE.")
+    d.divider("d2", "02", "Defining structure (DDL)", "CREATE, ALTER, DROP and TRUNCATE, with constraints and foreign keys.")
 
     code_side("create", "DDL", "CREATE TABLE",
               """CREATE TABLE students (
@@ -265,7 +265,7 @@ UPDATE employee SET salary = 0;""",
             gap=32)
 
     # ---------------- 04 SELECT ----------------
-    d.divider("d4", "04", "Querying one table", "SELECT, filtering, NULLs, sorting and computed columns.")
+    d.divider("d4", "04", "Querying one table", "SELECT, DISTINCT, filtering, NULLs, sorting, computed columns and CASE.")
 
     d.slide("select", "SELECT", "Anatomy of a query",
             row(code_block("""SELECT   dno, COUNT(*) AS n      -- 5

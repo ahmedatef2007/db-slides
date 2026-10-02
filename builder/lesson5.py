@@ -129,7 +129,7 @@ def build():
                        items=["Ssn → Dnumber → Dname"])], cols=3))
 
     # ---------- 03 ----------
-    d.divider("d3", "03", "Normal forms", "1NF, 2NF and 3NF step by step, then BCNF and beyond.")
+    d.divider("d3", "03", "Normal forms", "1NF, 2NF and 3NF step by step, then BCNF, 4NF/5NF, good decompositions and denormalization.")
 
     steps = [("1NF", "Atomic values"), ("2NF", "No partial deps"), ("3NF", "No transitive deps"), ("BCNF", "Every determinant is a key"),
              ("4NF", "No multi-valued deps"), ("5NF", "No join deps")]
@@ -253,7 +253,7 @@ def build():
             + callout("Normalize first; denormalize only with a **measured** reason, and document it.", size=28))
 
     # ---------- 04 ----------
-    d.divider("d4", "04", "Worked examples", "An ITI student sheet, real school data, and a suppliers table.")
+    d.divider("d4", "04", "Worked examples", "An ITI student sheet, real school data and a suppliers table.")
 
     d.slide("iti0", "ITI example", "ITI student sheet",
             row(card(None, size=26, items=["Student number: **ITI205-40**", "Name: Hassan Ali Ahmed", "Address (Street, City): 12 Haram St, Giza",

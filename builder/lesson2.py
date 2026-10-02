@@ -26,7 +26,7 @@ def build():
                 "Build an ERD from a **narrative**, step by step"])], cols=3))
 
     # ------------- Part 1 -------------
-    d.divider("d1", "01", "Modeling basics", "What an ERD is for, and its building blocks: entities, instances and attributes.")
+    d.divider("d1", "01", "Modeling basics", "What an ERD is for, and its building blocks: entities (strong and weak), instances and attributes.")
 
     steps = [("Requirements", "Interview users; write the narrative"), ("Conceptual design", "ERD (this lesson)"),
              ("Logical design", "Tables, keys (Lesson 3)"), ("Physical design", "SQL, indexes (Lesson 4)")]
@@ -134,7 +134,7 @@ def build():
               notes="If two attributes are underlined separately, then each is a key on its own (candidate keys). If they are joined into one composite attribute that is underlined, the combination is the key. Other composite-key example from the original: (ID, Application_no).")
 
     # ------------- Part 3 -------------
-    d.divider("d3", "03", "Relationships", "How entities connect: degree, cardinality ratio and participation.")
+    d.divider("d3", "03", "Relationships", "How entities connect: degree, cardinality ratio and participation, drawn in Chen and crow's foot notation.")
 
     d.slide("relconcepts", "Relationships", "Describing a relationship",
             p("A **relationship** is an association between entity instances: *Ali* **works for** *Research*.", size=32)
@@ -307,7 +307,7 @@ def build():
             notes="New diagram: the same COMPANY relationships drawn the way dbdiagram.io, draw.io or MySQL Workbench draw them. The symbol next to an entity tells how many of THAT entity relate to one instance on the other side: o< next to EMPLOYEE = a department has zero or many employees; || next to DEPARTMENT = an employee has exactly one department.")
 
     # ------------- Part 4 -------------
-    d.divider("d4", "04", "Building an ERD", "A repeatable method, applied to the COMPANY database.")
+    d.divider("d4", "04", "Building an ERD", "A repeatable method, applied to the COMPANY database, and the mistakes to avoid.")
 
     d.slide("method", "Method", "From narrative to ERD, step by step",
             grid([card(t, body=b, tag=f"{i + 1}", size=26, title_size=32) for i, (t, b) in enumerate([
@@ -407,7 +407,7 @@ def build():
             card(None, size=32, body="Each model must be produced at just one of the firm's **factories**, which are located in London, Birmingham, Bristol, Wolverhampton and Manchester (one in each city). Each factory has a *number of machines*, *capacity*, and *computer system* used (OS, DBMS, Internet).")
             + card(None, size=32, body="A factory produces many models of cars and many types of parts.")
             + callout("Is the key of MODEL just Name, or (Name, Suffix)? Is *images* single- or multi-valued? Is *computer system* composite?", label="Think:", tone="blue"),
-            notes="Hints: MODEL key = composite (Name, Suffix). PART: Id code key, Images multi-valued. MODEL-PART is M:N. FACTORY key = City; Computer system is composite (OS, DBMS, Internet). PRODUCES model: N models : 1 factory, model total. Factory produces parts: if each part type is produced at one factory only, that is 1:N; this can motivate discussing a ternary relationship in Lesson 3.")
+            notes="Hints: the narrative says the model name is unique, so Name is the key (Lesson 3 uses name as the PK). If only the combination were unique (Corolla GL, Corolla XL), the key would be the composite (Name, Suffix), as on the keys slide. PART: Id code key, Images multi-valued. MODEL-PART is M:N (uses). FACTORY key = City; Computer system is composite (OS, DBMS, Internet). PRODUCED_AT: N models : 1 factory, model total. 'Parts made in the same factory as the model' needs no ternary: each model has one factory, so the factory of a part follows from its models (Lesson 3 shows the tables).")
 
     d.slide("bus1", "Case study 2", "Country bus company (1/2)",
             card(None, size=32, body="A country bus company owns a number of **buses**. A bus is characterized by *number*, *number of chairs*, *options* (AC, Automatic, PS) and *brand name*.")
