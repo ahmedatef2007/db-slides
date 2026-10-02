@@ -68,9 +68,9 @@ def build():
     e.line(960, 496, 960, 566, head="end")
     e.line(800, 654, 760, 746, head="end")
     e.line(1120, 654, 1220, 746, head="end")
-    side = (f'<div style="position:absolute;left:400px;top:560px;width:1120px;height:300px;border:3px dashed {ACCENT};border-radius:16px"></div>'
-            f'<p style="position:absolute;left:1540px;top:600px;width:260px;font-size:26px;font-weight:600;color:{ACCENT}">Database system</p>'
-            f'<p style="position:absolute;left:1540px;top:640px;width:260px;font-size:24px;color:{MUTED}">= DBMS software + data + metadata</p>')
+    side = (pin_box(400, 560, 1120, 300, border=ACCENT, dashed=True, radius=16, border_w=3)
+            + pin_text(1540, 600, 260, "Database system", 26, ACCENT, bold=True)
+            + pin_text(1540, 640, 260, "= DBMS software + data + metadata", 24, MUTED))
     d.diagram("dbsystem", "Basic definitions", "A database system, simplified", e, side=side,
               notes="Walk top-down: people use programs; programs send queries to the DBMS; the DBMS reads the catalog (metadata) to understand the data, then reads or writes the stored data. Applications never touch the files directly.")
 
@@ -124,9 +124,9 @@ def build():
     e.line(960, 724, 960, 804)
     lab = ""
     for y, t in ((330, "External level"), (520, "Conceptual level"), (680, "Internal level")):
-        lab += f'<p style="position:absolute;left:128px;top:{y - 18}px;width:240px;font-size:26px;font-weight:600;color:{ACCENT}">{t}</p>'
+        lab += pin_text(128, y - 18, 240, t, 26, ACCENT, bold=True)
     for y, t in ((432, "external / conceptual mapping"), (600, "conceptual / internal mapping")):
-        lab += f'<p style="position:absolute;left:1340px;top:{y - 16}px;width:420px;font-size:24px;color:{MUTED}"><i>{t}</i></p>'
+        lab += pin_text(1340, y - 16, 420, t, 24, MUTED, italic=True)
     d.diagram("threeschema", "Architecture", "The three-schema architecture", e, side=lab,
               notes="Also called the ANSI/SPARC architecture. Each level is described by a schema; the DBMS maps requests and results between levels.")
 

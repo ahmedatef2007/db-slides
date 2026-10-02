@@ -4,29 +4,18 @@ from lib import *
 def rel_cells(names, x0, top, w, keys=(), h=70, label=None):
     out = ""
     if label:
-        out += f'<p style="position:absolute;left:{x0}px;top:{top - 48}px;width:600px;font-family:{DISPLAY};font-size:28px;font-weight:600;color:{INK}">{esc(label)}</p>'
+        out += pin_text(x0, top - 48, 600, label, 28, INK, bold=True, font=DISPLAY)
     for i, n in enumerate(names):
-        t = f"<u>{esc(n)}</u>" if n in keys else esc(n)
-        out += (f'<div style="position:absolute;left:{x0 + i * w}px;top:{top}px;width:{w}px;height:{h}px;background:{CARD};'
-                f'border:2px solid {INK};display:flex;align-items:center;justify-content:center">'
-                f'<p style="font-family:{MONO};font-size:24px;color:{INK};text-align:center">{t}</p></div>')
+        out += pin_box(x0 + i * w, top, w, h, fill=CARD, border=INK, text=n, text_size=24, font=MONO, underline=n in keys)
     return out
 
 
 def conn(x1, y1, x2, y2, head="none", color=INK):
-    return (f'<x-connector x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" head="{head}" '
-            f'style="color:{color};border-width:3px"></x-connector>')
+    return pin_conn(x1, y1, x2, y2, head=head, color=color)
 
 
 def stage_box(label, lines, tone=None, size=24):
-    bg, bd = (BLUE_TINT, "#C3D3EE") if tone == "blue" else (CARD, LINE)
-    inner = (f'<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:{ACCENT}">{esc(label)}</p>'
-             + "".join(schema_line(n, c, size=size) for n, c in lines))
-    return (f'<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:{bg};border:1px solid {bd};'
-            f'border-radius:16px;padding:24px 32px">{inner}</div>')
-
-
-KEY_LEGEND = f'<u><b>underlined</b></u> = primary key · <span style="color:{BLUE}"><i>blue italic</i></span> = foreign key'
+    return box([eyebrow(label)] + [schema_line(n, c, size=size) for n, c in lines], tone=tone)
 
 
 def build():
@@ -103,26 +92,23 @@ def build():
              + conn(590, 640, 1470, 640) + conn(1250, 640, 1250, 414, head="end") + conn(1470, 640, 1470, 414, head="end"))
     labs = ""
     for y, t in ((480, "FD1"), (560, "FD2"), (640, "FD3")):
-        labs += f'<p style="position:absolute;left:150px;top:{y - 18}px;width:90px;font-family:{MONO};font-size:26px;font-weight:700;color:{ACCENT}">{t}</p>'
-    expl = (f'<div style="position:absolute;left:128px;top:700px;width:1664px">'
-            + table(["FD", "Dependency", "Type"],
+        labs += pin_text(150, y - 18, 90, t, 26, ACCENT, bold=True, font=MONO)
+    expl = pin_block(128, 700, 1664, table(["FD", "Dependency", "Type"],
                     [["FD1", "{Ssn, Pnumber} → Hours", "**Full**: needs the whole key"],
                      ["FD2", "Ssn → Ename", "**Partial**: depends on part of the key"],
                      ["FD3", "Pnumber → {Pname, Plocation}", "**Partial**: depends on part of the key"]],
-                    widths=[12, 46, 42], size=24) + "</div>")
+                    widths=[12, 46, 42], size=24))
     d.slide("fdpartial", "Functional dependencies", "Full and partial dependencies", lines + cells + labs + expl,
             notes="Redrawn from the original figure (Elmasri & Navathe). The key of EMP_PROJ is {Ssn, Pnumber}. FD2 and FD3 are partial: they violate 2NF.")
 
     cells = rel_cells(["Ename", "Ssn", "Bdate", "Address", "Dnumber", "Dname", "Dmgr_ssn"], 260, 340, 200, keys=("Ssn",), label="EMP_DEPT")
     lines = (conn(560, 410, 560, 480) + conn(360, 480, 1140, 480)
-             + "".join(conn(x, 480, x, 414, head="end") for x in (360, 760, 960, 1140))
+             + conn(360, 480, 360, 414, head="end") + conn(760, 480, 760, 414, head="end")
+             + conn(960, 480, 960, 414, head="end") + conn(1140, 480, 1140, 414, head="end")
              + conn(1190, 410, 1190, 560) + conn(1190, 560, 1560, 560)
              + conn(1360, 560, 1360, 414, head="end") + conn(1560, 560, 1560, 414, head="end"))
-    labs = (f'<p style="position:absolute;left:150px;top:462px;width:90px;font-family:{MONO};font-size:26px;font-weight:700;color:{ACCENT}">FD1</p>'
-            f'<p style="position:absolute;left:150px;top:542px;width:90px;font-family:{MONO};font-size:26px;font-weight:700;color:{ACCENT}">FD2</p>')
-    expl = (f'<div style="position:absolute;left:128px;top:640px;width:1664px;display:flex;flex-direction:column;gap:16px">'
-            + callout("Ssn → Dnumber and Dnumber → {Dname, Dmgr_ssn}, so Ssn → Dname **through** Dnumber: a **transitive** dependency. Dnumber is not a key of EMP_DEPT.", size=28)
-            + "</div>")
+    labs = pin_text(150, 462, 90, "FD1", 26, ACCENT, bold=True, font=MONO) + pin_text(150, 542, 90, "FD2", 26, ACCENT, bold=True, font=MONO)
+    expl = pin_block(128, 640, 1664, callout("Ssn → Dnumber and Dnumber → {Dname, Dmgr_ssn}, so Ssn → Dname **through** Dnumber: a **transitive** dependency. Dnumber is not a key of EMP_DEPT.", size=28))
     d.slide("fdtransitive", "Functional dependencies", "Transitive dependencies", lines + cells + labs + expl,
             notes="Transitive dependencies violate 3NF. This is the EMP_DEPT table from the anomalies slide.")
 
@@ -139,16 +125,17 @@ def build():
 
     steps = [("1NF", "Atomic values"), ("2NF", "No partial deps"), ("3NF", "No transitive deps"), ("BCNF", "Every determinant is a key"),
              ("4NF", "No multi-valued deps"), ("5NF", "No join deps")]
-    blocks = []
+    bars = ""
+    bw, gap = 264, 16
     for i, (n, t) in enumerate(steps):
-        tone_bg = BLUE if i < 3 else (INK if i == 3 else "#4A5874")
-        blocks.append(f'<div style="flex:1;display:flex;flex-direction:column;justify-content:end;gap:8px;background:{tone_bg};'
-                      f'border-radius:16px;padding:28px;height:{220 + i * 70}px">'
-                      f'<p style="font-family:{DISPLAY};font-size:48px;font-weight:700;color:{ON_INK}">{n}</p>'
-                      f'<p style="font-size:24px;line-height:1.3;color:{ON_INK}">{esc(t)}</p></div>')
+        fill = BLUE if i < 3 else (INK if i == 3 else MUTED)
+        h = 220 + i * 70
+        x = 128 + i * (bw + gap)
+        bars += pin_box(x, 840 - h, bw, h, fill=fill, radius=16)
+        bars += pin_text(x + 28, 840 - 150, bw - 56, n, 48, ON_INK, bold=True, font=DISPLAY)
+        bars += pin_text(x + 28, 840 - 84, bw - 56, t, 24, ON_INK)
     d.slide("ladder", "Normal forms", "Each normal form includes the previous one",
-            f'<div style="display:flex;flex-direction:row;gap:16px;align-items:flex-end">' + "".join(blocks) + "</div>"
-            + p("Practical designs usually stop at **3NF** or **BCNF**. *Denormalization* deliberately goes back down for performance.", size=28),
+            bars + pin_text(128, 866, 1664, "Practical designs usually stop at **3NF** or **BCNF**. *Denormalization* deliberately goes back down for performance.", 28, BODY),
             notes="A table in 3NF is also in 2NF and 1NF. Database designers need not normalize to the highest possible normal form.")
 
     d.slide("1nf", "Normal forms", "First normal form (1NF)",
@@ -174,7 +161,7 @@ def build():
             stage_box("1NF", [("STUDENT", ["_Stud_ID_", "Name", "Location", "Level", "Level_Mgr"]),
                               ("STUDENT_TEL", ["_Stud_ID*_", "_Tel_"]),
                               ("STUDENT_SUBJECT", ["_Stud_ID*_", "_Subject_", "Subject_Desc", "Grade"])], size=28)
-            + p(KEY_LEGEND, size=24, color=MUTED, raw=True)
+            + key_legend()
             + callout("Every cell is now atomic. But STUDENT_SUBJECT still repeats Subject_Desc for every student taking that subject.", size=28))
 
     d.slide("2nf", "Normal forms", "Second normal form (2NF)",
@@ -190,7 +177,7 @@ def build():
                               ("STUDENT_TEL", ["_Stud_ID*_", "_Tel_"]),
                               ("STUD_SUBJECT", ["_Stud_ID*_", "_Subject*_", "Grade"]),
                               ("SUBJECT", ["_Subject_", "Subject_Desc"])], size=28)
-            + p(KEY_LEGEND, size=24, color=MUTED, raw=True)
+            + key_legend()
             + callout("Subject → Subject_Desc was partial (only part of {Stud_ID, Subject}). STUDENT is still not in 3NF: Level → Level_Mgr.", size=28))
 
     d.slide("3nf", "Normal forms", "Third normal form (3NF)",
@@ -207,7 +194,7 @@ def build():
                               ("STUDENT_TEL", ["_Stud_ID*_", "_Tel_"]),
                               ("STUD_SUBJECT", ["_Stud_ID*_", "_Subject*_", "Grade"]),
                               ("SUBJECT", ["_Subject_", "Subject_Desc"])], size=28)
-            + p(KEY_LEGEND, size=24, color=MUTED, raw=True)
+            + key_legend()
             + callout("Five tables, each about **one thing**. Changing a level manager now updates exactly one row.", tone="blue", size=28))
 
     d.slide("bcnf", "Normal forms", "Boyce–Codd normal form (BCNF)",
@@ -263,7 +250,7 @@ def build():
                                   ("DEPARTMENT", ["_Dept_Name_", "Dept_Desc"])]),
                 stage_box("3NF", [("STUDENT", ["_Stud_No_", "Stud_Name", "F_code*", "Major", "Street", "City"]),
                                   ("FACULTY", ["_F_code_", "Faculty"])], tone="blue"), gap=20)
-            + p(KEY_LEGEND + " · each stage lists only the tables that changed", size=24, color=MUTED, raw=True),
+            + key_legend(),
             notes="1NF: phone numbers and the department rows were repeating; Address split into Street, City. 2NF: Dept_Desc depends only on Dept_Name. 3NF: Faculty depends on F_code, a non-key attribute.")
 
     d.slide("real0", "Real-world data", "Real-world school data",
@@ -286,7 +273,7 @@ def build():
                                               ("COURSE", ["_Course_", "Course_Desc"])]),
                   stage_box("3NF (changed)", [("STUDENT", ["_App_No_", "…", "Postal_Code*", "…"]),
                                               ("POSTAL_CODE", ["_Postal_Code_", "City"])], tone="blue"), gap=20)
-            + p(KEY_LEGEND, size=24, color=MUTED, raw=True),
+            + key_legend(),
             gap=20,
             notes="Clarified: the original 3NF table was written City (City, Postal_Code). The dependency is Postal_Code → City, so the new table's key is Postal_Code and STUDENT keeps Postal_Code as a FK.")
 
@@ -301,7 +288,7 @@ def build():
                 stage_box("2NF", [("SUPPLIER", ["_S#_", "Country", "Currency"]), ("SUPPLIER_PART", ["_S#*_", "_P#_", "Qty"])]),
                 stage_box("3NF", [("SUPPLIER", ["_S#_", "Country*"]), ("COUNTRY", ["_Country_", "Currency"]), ("SUPPLIER_PART", ["_S#*_", "_P#_", "Qty"])], tone="blue"), gap=20)
             + callout("Every value is already atomic, so the original relation **is already in 1NF**. The split into SUPPLIER and SUPPLIER_PART removes the **partial** dependency S# → Country, Currency: that is the **2NF** step.", size=26)
-            + p(KEY_LEGEND, size=24, color=MUTED, raw=True),
+            + key_legend(),
             notes="Fixed: the original showed the SUPPLIER / SUPPLIER_PARTS split as the 1NF step and said 2NF was 'same as first'. Since the relation has no multi-valued or repeating attributes it is already in 1NF; removing the partial dependency is by definition the 2NF step.")
 
     d.takeaways("recap", [

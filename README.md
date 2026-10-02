@@ -16,6 +16,26 @@ Design system: [Database Course](https://claude.ai/artifact/WdbVXkRa43NmX6n2AKuX
 Every lesson ends with key takeaways, optional exercises (Core / Stretch / Challenge) and a "Study more" list.
 Speaker notes start with `Fixed:` where a slide corrects the original material.
 
+## PowerPoint decks (ITI template)
+
+`pptx/` holds the five lessons as PowerPoint files in the style of the *Lesson 3 Enhanced* deck
+(white slides, ITI crimson, teal for foreign keys, Arial / Calibri / Courier New, 20" × 11.25"):
+
+| Lesson | File | Slides |
+| --- | --- | --- |
+| 1 | `ITI_Database_Course_Lesson_1_Introduction.pptx` | 30 |
+| 2 | `ITI_Database_Course_Lesson_2_ERD.pptx` | 39 |
+| 3 | `ITI_Database_Course_Lesson_3_Enhanced.pptx` (the template deck itself) | 27 |
+| 4 | `ITI_Database_Course_Lesson_4_SQL.pptx` | 67 |
+| 5 | `ITI_Database_Course_Lesson_5_Normalization.pptx` | 38 |
+
+They are generated from the same lesson content as the web decks: `builder/pptlib.py` is a
+PowerPoint backend for the builder and `builder/iti_template.pptx` supplies the theme. Rebuild with:
+
+```sh
+cd builder && python3 build_pptx.py 1 2 4 5   # needs python-pptx
+```
+
 ## Layout
 
 - `design-system/` — the "Database Course" design system (colors, type scale, spacing, cover).

@@ -428,3 +428,67 @@ class Deck:
         with open(os.path.join(out_dir, "project", "deck.json"), "w") as fh:
             json.dump(deck, fh, indent=1, ensure_ascii=False)
         return total
+
+
+# ---- backend-neutral helpers (the PowerPoint backend in pptlib.py mirrors these) ----
+def pin_text(x, y, w, text, size=24, color=None, bold=False, italic=False, align="left", font=None, underline=False):
+    color = color or BODY
+    t = md(text)
+    if underline:
+        t = f"<u>{t}</u>"
+    if bold:
+        t = f"<b>{t}</b>"
+    if italic:
+        t = f"<i>{t}</i>"
+    ff = f"font-family:{font};" if font else ""
+    return (f'<p style="position:absolute;left:{x}px;top:{y}px;width:{w}px;{ff}font-size:{size}px;line-height:1.45;'
+            f'color:{color};text-align:{align}">{t}</p>')
+
+
+def pin_box(x, y, w, h, fill=None, border=None, dashed=False, radius=0, border_w=2, text=None, text_size=24,
+            text_color=None, font=None, underline=False):
+    st = f"position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px"
+    if fill:
+        st += f";background:{fill}"
+    if border:
+        st += f";border:{border_w}px {'dashed' if dashed else 'solid'} {border}"
+    if radius:
+        st += f";border-radius:{radius}px"
+    inner = ""
+    if text is not None:
+        st += ";display:flex;align-items:center;justify-content:center"
+        t = esc(text)
+        if underline:
+            t = f"<u>{t}</u>"
+        ff = f"font-family:{font};" if font else ""
+        inner = f'<p style="{ff}font-size:{text_size}px;color:{text_color or INK};text-align:center">{t}</p>'
+    return f'<div style="{st}">{inner}</div>'
+
+
+def pin_conn(x1, y1, x2, y2, head="none", color=None, width=3):
+    return (f'<x-connector x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" head="{head}" '
+            f'style="color:{color or INK};border-width:{width}px"></x-connector>')
+
+
+def pin_block(x, y, w, content):
+    return f'<div style="position:absolute;left:{x}px;top:{y}px;width:{w}px;display:flex;flex-direction:column;gap:16px">{content}</div>'
+
+
+def arrow_right():
+    return f'<x-shape kind="arrow-right" style="width:64px;height:40px;background:{LINE};align-self:center"></x-shape>'
+
+
+def eyebrow(text):
+    return (f'<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;'
+            f'color:{ACCENT}">{esc(text)}</p>')
+
+
+def box(children, tone=None, flex="1", pad="24px 32px", gap=8):
+    bg, bd = (BLUE_TINT, "#C3D3EE") if tone == "blue" else (CARD, LINE)
+    return (f'<div style="flex:{flex};display:flex;flex-direction:column;gap:{gap}px;background:{bg};border:1px solid {bd};'
+            f'border-radius:16px;padding:{pad}">' + "".join(children) + "</div>")
+
+
+def key_legend():
+    return (f'<p style="font-size:24px;line-height:1.45;color:{MUTED}"><u><b>underlined</b></u> = primary key · '
+            f'<span style="color:{BLUE}"><i>blue italic</i></span> = foreign key</p>')

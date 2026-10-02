@@ -2,14 +2,11 @@ from lib import *
 
 
 def legend(left, top, width, items):
-    lis = "".join(f"<li>{md(i)}</li>" for i in items)
-    return (f'<div style="position:absolute;left:{left}px;top:{top}px;width:{width}px;display:flex;flex-direction:column;gap:8px;'
-            f'background:{CARD};border:1px solid {LINE};border-radius:16px;padding:28px">'
-            f'<ul style="font-size:24px;line-height:1.45;color:{BODY}">{lis}</ul></div>')
+    return pin_block(left, top, width, card(None, items=items, size=24))
 
 
 def note_box(left, top, width, text, size=26):
-    return (f'<p style="position:absolute;left:{left}px;top:{top}px;width:{width}px;font-size:{size}px;line-height:1.45;color:{BODY}">{md(text)}</p>')
+    return pin_text(left, top, width, text, size, BODY)
 
 
 def build():
@@ -38,7 +35,7 @@ def build():
         tone = "accent" if i == 1 else "card"
         boxes.append(card(t, body=s, tone=tone, size=28))
         if i < 3:
-            boxes.append(f'<x-shape kind="arrow-right" style="width:64px;height:40px;background:{LINE};align-self:center"></x-shape>')
+            boxes.append(arrow_right())
     d.slide("whyerd", "Modeling basics", "Where the ERD fits",
             p("An **Entity Relationship Diagram** identifies the information a business needs by showing the relevant **entities** and the **relationships** between them.", size=32)
             + row(*boxes, gap=16)
@@ -156,7 +153,7 @@ def build():
     e.line(1570, 588, 1640, 716)
     lab = ""
     for x, t in ((400, "Unary (recursive): 1 entity type"), (960, "Binary: 2 entity types"), (1520, "Ternary: 3 entity types")):
-        lab += f'<p style="position:absolute;left:{x - 260}px;top:836px;width:520px;font-size:26px;font-weight:600;color:{ACCENT};text-align:center">{t}</p>'
+        lab += pin_text(x - 260, 836, 520, t, 26, ACCENT, bold=True, align="center")
     d.diagram("degree", "Relationships", "Degree of a relationship", e, side=lab,
               notes="In a recursive relationship the same entity type plays two different roles, so we label the lines with role names (supervisor, supervisee). Binary relationships are by far the most common.")
 
@@ -200,11 +197,10 @@ def build():
     e.line(1070, 400, 1390, 400, double=True)
     e.text(640, 368, "(0,N)", w=120)
     e.text(1280, 368, "(1,1)", w=120)
-    side = (f'<div style="position:absolute;left:128px;top:540px;width:1664px">'
-            + table(["Pair", "Read it as", "So participation is"],
+    side = pin_block(128, 540, 1664, table(["Pair", "Read it as", "So participation is"],
                     [["(0,N) next to DEPARTMENT", "A department may hire **zero or more** employees", "Partial (min = 0)"],
                      ["(1,1) next to EMPLOYEE", "An employee is hired by **exactly one** department", "Total (min ≥ 1)"]],
-                    widths=[30, 46, 24], size=26) + "</div>")
+                    widths=[30, 46, 24], size=26))
     d.diagram("minmax", "Relationships", "Structural constraints in (min, max) notation", e, side=side,
               notes="Formal constraint: (min,max) means each entity participates in at least min and at most max relationship instances. min = 0 means partial participation, min >= 1 means total. Careful: (min,max) is written next to the entity it describes, which is the opposite side from the 1:N labels on the previous slides.")
 
@@ -250,7 +246,7 @@ def build():
     lab = ""
     for i, t in enumerate(labels):
         cx, cy = cell(i)
-        lab += f'<p style="position:absolute;left:{cx - 200}px;top:{cy + 150}px;width:400px;font-size:24px;color:{MUTED};text-align:center">{t}</p>'
+        lab += pin_text(cx - 200, cy + 150, 400, t, 24, MUTED, align="center")
     d.diagram("notation", "Notation", "Summary of Chen notation", e, side=lab,
               notes="Guidelines: a relationship between two entities is a line through a diamond. Verbs name relationships (e.g. 'addresses LOCATE businesses'). Attribute lists grow as you go. Select (or assign) one unique identifier per entity.")
 
