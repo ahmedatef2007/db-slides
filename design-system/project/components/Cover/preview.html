@@ -1,0 +1,43 @@
+<!-- @dsCard height=288 -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&family=IBM+Plex+Sans:wght@400&display=swap">
+<style>
+  html, body { margin: 0; background: var(--paper); }
+  .cover { position: relative; width: 960px; height: 288px; overflow: hidden; background: var(--paper); }
+  .name { position: absolute; left: 40px; bottom: 64px; width: 440px; margin: 0;
+          font-family: "Space Grotesk", Arial, sans-serif; font-weight: 600; font-size: 88px; line-height: .95; color: var(--ink); }
+  .tag { position: absolute; left: 40px; bottom: 32px; width: 440px; margin: 0;
+         font-family: "IBM Plex Sans", Arial, sans-serif; font-size: 14px; color: var(--muted); }
+  svg { position: absolute; left: 480px; top: 0; }
+  .ink { fill: var(--ink); } .acc { fill: var(--accent-fill); } .blue { fill: var(--blue); }
+  .p2 { fill: var(--paper-2); } .tint { fill: var(--accent-tint); } .dot { fill: var(--line); }
+  .row { fill: var(--on-ink); opacity: .18; }
+  .r { rx: var(--radius-m); }
+</style>
+<div class="cover">
+  <!-- blocks: ink 216x288 slab, accent-fill 160x128, blue 160x136, paper-2 224x288, accent-tint 64x128
+       arrangement: one tall slab with satellites, bleeding off top and right
+       pattern: literal motif "table rows" (the course is about tables) — 6 row bands cut into the ink slab, plus a 24px dot grid (space-s) on paper-2: precise, technical
+       steps/radii: space-s 24, space-m 40, space-l 64; radius-m 16 -->
+  <svg width="480" height="288" viewBox="0 0 480 288">
+    <rect class="p2" x="256" y="0" width="224" height="288"/>
+    <g>
+      <circle class="dot" cx="280" cy="168" r="3"/><circle class="dot" cx="304" cy="168" r="3"/><circle class="dot" cx="328" cy="168" r="3"/><circle class="dot" cx="352" cy="168" r="3"/><circle class="dot" cx="376" cy="168" r="3"/><circle class="dot" cx="400" cy="168" r="3"/><circle class="dot" cx="424" cy="168" r="3"/><circle class="dot" cx="448" cy="168" r="3"/>
+      <circle class="dot" cx="280" cy="192" r="3"/><circle class="dot" cx="304" cy="192" r="3"/><circle class="dot" cx="328" cy="192" r="3"/><circle class="dot" cx="352" cy="192" r="3"/><circle class="dot" cx="376" cy="192" r="3"/><circle class="dot" cx="400" cy="192" r="3"/><circle class="dot" cx="424" cy="192" r="3"/><circle class="dot" cx="448" cy="192" r="3"/>
+      <circle class="dot" cx="280" cy="216" r="3"/><circle class="dot" cx="304" cy="216" r="3"/><circle class="dot" cx="328" cy="216" r="3"/><circle class="dot" cx="352" cy="216" r="3"/><circle class="dot" cx="376" cy="216" r="3"/><circle class="dot" cx="400" cy="216" r="3"/><circle class="dot" cx="424" cy="216" r="3"/><circle class="dot" cx="448" cy="216" r="3"/>
+      <circle class="dot" cx="280" cy="240" r="3"/><circle class="dot" cx="304" cy="240" r="3"/><circle class="dot" cx="328" cy="240" r="3"/><circle class="dot" cx="352" cy="240" r="3"/><circle class="dot" cx="376" cy="240" r="3"/><circle class="dot" cx="400" cy="240" r="3"/><circle class="dot" cx="424" cy="240" r="3"/><circle class="dot" cx="448" cy="240" r="3"/>
+      <circle class="dot" cx="280" cy="264" r="3"/><circle class="dot" cx="304" cy="264" r="3"/><circle class="dot" cx="328" cy="264" r="3"/><circle class="dot" cx="352" cy="264" r="3"/><circle class="dot" cx="376" cy="264" r="3"/><circle class="dot" cx="400" cy="264" r="3"/><circle class="dot" cx="424" cy="264" r="3"/><circle class="dot" cx="448" cy="264" r="3"/>
+    </g>
+    <rect class="ink" x="40" y="0" width="216" height="288"/>
+    <rect class="row" x="64" y="40" width="168" height="24"/>
+    <rect class="row" x="64" y="88" width="168" height="8"/>
+    <rect class="row" x="64" y="120" width="168" height="8"/>
+    <rect class="row" x="64" y="152" width="168" height="8"/>
+    <rect class="row" x="64" y="184" width="168" height="8"/>
+    <rect class="row" x="64" y="216" width="168" height="8"/>
+    <rect class="acc r" x="280" y="-16" width="160" height="128"/>
+    <rect class="blue r" x="200" y="160" width="160" height="136"/>
+    <rect class="tint" x="440" y="0" width="64" height="128"/>
+  </svg>
+  <p class="name">Database Course</p>
+  <p class="tag">Slides for Database Fundamentals: ERD, mapping, SQL, normalization.</p>
+</div>
