@@ -48,6 +48,7 @@ text(40, 74, "OFFICE_HOUR cannot be identified on its own. It borrows its identi
      14, anchor="start", color=MUTED)
 
 # ---- ER diagram
+diagram_start = len(out)
 INS, HOLDS, OH = (250, 270), (590, 270), (930, 270)
 line(INS, HOLDS); line(HOLDS, OH, double=True)
 entity("INSTRUCTOR", INS); rel("holds", HOLDS, weak=True); entity("OFFICE_HOUR", OH, weak=True)
@@ -58,6 +59,7 @@ for s, t in shapes:
     out.append(s); text(*t[:3], size=t[3], weight=t[4], under=t[5])
 text(420, 250, "1", 18, "bold", color=ACC); text(770, 250, "N", 18, "bold", color=ACC)
 text(420, 296, "owner", 12, color=MUTED, italic=True); text(770, 300, "weak", 12, color=MUTED, italic=True)
+diagram_end = len(out)
 badge(1046, 236, 1); badge(590, 205, 2); badge(712, 300, 3); badge(1022, 418, 4); badge(758, 120, 4)
 badge(140, 145, 5)
 
@@ -144,3 +146,8 @@ text(x0 + 16, y + 71, "every row unique.", 13.5, anchor="start")
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">'
        f'<rect width="{W}" height="{H}" fill="#fff"/>' + "".join(out) + "</svg>")
 open("diagrams/weak-entity-office-hour.svg", "w").write(svg)
+
+# diagram only, no callouts or explanation panels
+snippet = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="120 95 1000 340" width="1000" height="340">'
+           f'<rect x="120" y="95" width="1000" height="340" fill="#fff"/>' + "".join(out[diagram_start:diagram_end]) + "</svg>")
+open("diagrams/weak-entity-office-hour-diagram.svg", "w").write(snippet)
