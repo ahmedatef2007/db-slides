@@ -20,7 +20,7 @@ def build():
             grid([card(None, body=t, tag=f"{i + 1:02d}", size=30) for i, t in enumerate([
                 "Explain where the ERD sits in the **design process**",
                 "Identify **entities**, strong and weak",
-                "Classify **attributes** and choose **keys**",
+                "Classify **attributes** and **key attributes**",
                 "Describe relationships by **degree, cardinality, participation**",
                 "Read and draw **Chen** notation, and read **crow's foot**",
                 "Build an ERD from a **narrative**, step by step"])], cols=3))
@@ -76,7 +76,7 @@ def build():
     e.line(1420, 564, 1390, 688)
     e.line(1560, 564, 1660, 688)
     side = note_box(128, 640, 820,
-                    "A **weak entity** has no key of its own. It is identified by its **owner** (EMPLOYEE) + its **partial key** (Name), through an **identifying relationship** (double diamond). Its participation is always **total** (double line).")
+                    "A **weak entity** has no key of its own. It is identified by its **owner** (EMPLOYEE) + its **partial key** (Name), through an **identifying relationship** (double diamond). And its participation is always **total** (double line).")
     d.diagram("weak", "Modeling basics", "Strong vs weak entity types", e, side=side,
               notes="Example: a DEPENDENT is identified by the dependent's first name (and birth date) together with the EMPLOYEE they belong to. Two employees can each have a son called Ahmed; only Ssn + Name is unique. In Chen notation the partial key is drawn with a dashed underline.")
 
@@ -103,7 +103,7 @@ def build():
     d.slide("attrtypes", "Attributes", "Attribute types",
             table(["Type", "Meaning", "Example", "Chen symbol"],
                   [["Simple (atomic)", "Cannot be divided; one value per instance", "Salary", "Ellipse"],
-                   ["Composite", "Made of smaller parts", "Name = Fname + Lname; Address = Street + City", "Ellipse with sub-ellipses"],
+                   ["Composite", "Made of parts", "Name = Fname + Lname; Address = Street + City", "Ellipse with sub-ellipses"],
                    ["Multi-valued", "A set of values for one instance", "Phones, Locations, Images", "Double ellipse"],
                    ["Derived", "Calculated from other attributes or entities", "Age from BirthDate; NumberOfEmployees", "Dashed ellipse"],
                    ["Key", "Unique for each instance", "Ssn, Student_ID", "Underlined name"]],
@@ -327,7 +327,7 @@ def build():
             notes="Ask students to underline nouns (entities), circle verbs (relationships), and highlight 'unique' (keys) before moving on.")
 
     d.slide("company2", "COMPANY case", "The COMPANY database: requirements (2/2)",
-            card(None, size=30, body="We store each **employee**'s *name, social security number, address, salary, gender and birth date*. An employee must be assigned to **one department** and must **work on** one or more projects, which are not necessarily controlled by the same department. We keep track of the *number of hours per week* that an employee works on each project. We also keep track of the **direct supervisor** of each employee.")
+            card(None, size=30, body="We store each **employee**'s *name, social security number (key), address, salary, gender and birth date*. An employee must be assigned to **one department** and must **work on** one or more projects, which are not necessarily controlled by the same department. We keep track of the *number of hours per week* that an employee works on each project. We also keep track of the **direct supervisor** of each employee.")
             + card(None, size=30, body="We keep track of the **dependents** of each employee for insurance purposes: each dependent's *first name, gender, birth date* and *relationship* to the employee."))
 
     e = ERD()
@@ -454,4 +454,5 @@ def build():
         ("Read", "Lucidchart: What is an ERD?", "notations compared with pictures", "https://www.lucidchart.com/pages/er-diagrams"),
         ("Video", "CMU 15-445 / Stanford DB courses", "search \"ER model\" lectures for worked examples", "https://15445.courses.cs.cmu.edu/")])
 
+    d.thanks()
     return d

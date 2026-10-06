@@ -22,7 +22,7 @@ def build():
         d.slide(sid, eyebrow, title, body, notes=notes, gap=32)
 
     d.cover("cover", "Structured Query Language",
-            "Define, change, query and protect data with SQL, using the COMPANY database.",
+            "Define, change, query and protect data with SQL.",
             ["DDL", "DML", "SELECT", "Joins", "Subqueries", "GROUP BY", "Views", "Indexes", "Transactions"])
 
     d.slide("objectives", "Lesson 4", "By the end of this lesson you can",
@@ -37,12 +37,12 @@ def build():
     # ---------------- 01 foundations ----------------
     d.divider("d1", "01", "SQL foundations", "The four families of SQL statements, transactions, schemas and data types.")
 
-    d.slide("families", "Foundations", "Four families of SQL statements",
+    d.slide("families", "Foundations", "Four categories of SQL statements",
             grid([card("DDL", body="Data **Definition**: structure", items=["CREATE", "ALTER", "DROP", "TRUNCATE"], tone="blue", size=28),
                   card("DML", body="Data **Manipulation**: rows", items=["SELECT", "INSERT", "UPDATE", "DELETE"], size=28),
                   card("DCL", body="Data **Control**: permissions", items=["GRANT", "REVOKE"], size=28),
                   card("TCL", body="Transaction **Control**", items=["COMMIT", "ROLLBACK", "SAVEPOINT"], tone="accent", size=28)], cols=4)
-            + callout("SQL is a **declarative** language: you say *what* you want; the DBMS's optimizer decides *how* to get it.", tone="blue"),
+            + callout("SQL is a **declarative** language: you say *what* you want and the DBMS's optimizer decides *how* to get it.", tone="blue"),
             notes="Added TCL, which the original slides used (rollback in the TRUNCATE notes) without naming. Some books also separate SELECT as DQL (data query language).")
 
     d.slide("transactions", "Transactions", "Transactions and ACID",
@@ -124,7 +124,7 @@ SELECT * FROM hr.employee;""",
   birth_date  DATE,
   gpa         DECIMAL(3,2) CHECK (gpa BETWEEN 0 AND 4)
 );""",
-              [card("Syntax", body="CREATE TABLE name (column TYPE [constraint], …, [table constraints]);", size=26),
+              [card("Syntax", body="CREATE TABLE name (column_name datatype [constraint], …, [table constraints]);", size=26),
                callout("Every column gets a **type**; constraints can be written inline or at the end.", tone="blue", size=26)],
               notes="Modernized from the original Students example (NUMBER(15), CHAR(50)), now with UNIQUE, DEFAULT and CHECK.")
 
@@ -150,7 +150,9 @@ CREATE TABLE employee (
               size=24)
 
     code_side("alter", "DDL", "ALTER TABLE",
-              """ALTER TABLE students ADD phone VARCHAR(20);
+              """ALTER TABLE table_name ADD column_name datatype;
+
+ALTER TABLE students ADD phone VARCHAR(20);
 
 ALTER TABLE students DROP COLUMN phone;
 
@@ -268,14 +270,16 @@ UPDATE employee SET salary = 0;""",
     d.divider("d4", "04", "Querying one table", "SELECT, DISTINCT, filtering, NULLs, sorting, computed columns and CASE.")
 
     d.slide("select", "SELECT", "Anatomy of a query",
-            row(code_block("""SELECT   dno, COUNT(*) AS n      -- 5
+            row(code_block("""SELECT   dno,                    -- 6
+         COUNT(*) AS n           -- 4
 FROM     employee                -- 1
 WHERE    salary > 20000          -- 2
 GROUP BY dno                     -- 3
-HAVING   COUNT(*) > 2            -- 4
-ORDER BY n DESC;                 -- 6""", size=28, flex="3"),
-                col(card("Logical order", size=26, items=["1 FROM: pick the table(s)", "2 WHERE: filter rows", "3 GROUP BY: form groups",
-                                                          "4 HAVING: filter groups", "5 SELECT: compute columns", "6 ORDER BY: sort"]), flex="2"), gap=32),
+HAVING   COUNT(*) > 2            -- 5
+ORDER BY n DESC;                 -- 7""", size=28, flex="3"),
+                col(card("Execution order", size=26, items=["1 FROM: pick the table(s)", "2 WHERE: filter rows", "3 GROUP BY: form groups",
+                                                            "4 Aggregate functions: one value per group", "5 HAVING: filter groups",
+                                                            "6 SELECT: compute columns", "7 ORDER BY: sort"]), flex="2"), gap=32),
             notes="New slide: the written order (SELECT first) is not the evaluation order. This explains why a column alias defined in SELECT cannot be used in WHERE but can be used in ORDER BY.")
 
     code_side("simple", "SELECT", "Simple queries",
@@ -385,7 +389,7 @@ FETCH FIRST 3 ROWS ONLY;   -- standard, Oracle 12c+, PostgreSQL
        END AS salary_band
 FROM   employee;""",
               [card(None, body="CASE returns the first matching branch. It can be used in SELECT, WHERE, ORDER BY and inside aggregates.", size=28),
-               callout("`SUM(CASE WHEN sex = 'F' THEN 1 ELSE 0 END)` counts women per group.", tone="blue", size=26)],
+               callout("`SUM(CASE WHEN gender = 'F' THEN 1 ELSE 0 END)` counts women per group.", tone="blue", size=26)],
               notes="New slide: CASE is standard SQL and very common in reports.")
 
     # ---------------- 05 joins ----------------
@@ -502,10 +506,10 @@ FROM   employee e, project p;   -- no join condition""",
     # ---------------- 06 subqueries ----------------
     d.divider("d6", "06", "Subqueries & set operators", "Queries inside queries, EXISTS, UNION and friends, and CTEs.")
 
-    d.slide("subq", "Subqueries", "Sub-queries (nested queries)",
+    d.slide("subq", "Subqueries", "Subqueries (nested queries)",
             row(card(None, size=28, items=["A complete SELECT **inside** another statement",
-                                           "A simple subquery runs **once**, before the outer query",
-                                           "Usually in **WHERE** or **HAVING**",
+                                           "A non-correlated subquery runs **once**, independent of the outer row",
+                                           "In **WHERE**, **HAVING** or **SELECT**",
                                            "In **FROM** it is a derived table (an *inline view*)",
                                            "Single-row subqueries use = < >; multi-row ones use IN, ANY, ALL"]),
                 code_block("""-- employees in departments located in Houston
@@ -534,7 +538,8 @@ WHERE  salary > ALL (SELECT salary
                      FROM   employee
                      WHERE  dno = 5);
 
--- the same with an aggregate:
+-- usually the same with an aggregate
+-- (if dept 5 is not empty and has no NULL salaries)
 WHERE  salary > (SELECT MAX(salary)
                  FROM employee WHERE dno = 5);""",
               [table(["Form", "Means"], [["> ALL (…)", "> the maximum"], ["< ALL (…)", "< the minimum"], ["> ANY (…)", "> the minimum"],
@@ -579,7 +584,7 @@ WHERE  EXISTS (SELECT 1 FROM customers c
     d.slide("setops", "Set operators", "UNION, INTERSECT, EXCEPT",
             row(table(["Operator", "Returns", "Duplicates"],
                       [["UNION", "Rows in either query", "Removed"], ["UNION ALL", "Rows in either query", "Kept (faster)"],
-                       ["INTERSECT", "Rows in both queries", "Removed"], ["EXCEPT (MINUS in Oracle)", "Rows in the first but not the second", "Removed"]],
+                       ["INTERSECT", "Rows in both queries", "Removed"], ["EXCEPT (or MINUS in Oracle)", "Rows in the first but not the second", "Removed"]],
                       widths=[34, 42, 24], size=24),
                 code_block("""-- departments in Stafford or managed by 333445555
 SELECT dnumber FROM department
@@ -590,7 +595,7 @@ WHERE  dlocation = 'Stafford';""", size=24, flex="2"), gap=32)
             + callout("Both queries need the **same number of columns** with **compatible types**; the result uses the column names of the **first** query.", tone="blue", size=26),
             notes="Completes the original, which covered only UNION and UNION ALL. Example 2 from the original: SELECT name FROM employees UNION SELECT name FROM employees_retired (current and previous employees).")
 
-    code_side("cte", "Subqueries", "Common table expressions (WITH)",
+    code_side("cte", "Subqueries", "Common table expressions (CTEs)",
               """WITH dept_avg AS (
   SELECT dno, AVG(salary) AS avg_sal
   FROM   employee
@@ -708,7 +713,7 @@ GRANT hr_reader TO ahmed;""",
                    ["DML through the view", "Yes", "Not always"]], widths=[40, 30, 30], size=28)
             + callout("You can INSERT, UPDATE or DELETE through a simple view; complex views (joins, GROUP BY, DISTINCT, aggregates) are usually **read-only**.", tone="blue"))
 
-    code_side("createview", "Views", "Create, query, change, drop",
+    code_side("createview", "Views", "Create, query, change, drop a view",
               """CREATE VIEW vw_work_hrs AS
 SELECT e.fname, e.lname, p.pname, w.hours
 FROM   employee e
@@ -738,21 +743,36 @@ UPDATE v_supplier SET status = 10 WHERE s_id = 'S1';""",
 
     d.slide("indexes", "Indexes", "Indexes",
             row(col(card(None, size=28, items=["Speed up finding rows that match a **search condition**", "Can cover **one or several** columns",
-                                               "Created by you, or **automatically** for PRIMARY KEY and UNIQUE", "Used and maintained by the DBMS"]), flex="1"),
+                                               "Created by you (or **automatically** for PRIMARY KEY and UNIQUE)", "Used and maintained by the DBMS"]), flex="1"),
                 col(p("Index on City → rows of SUPPLIER", size=24, color=MUTED, extra="font-weight:600"),
                     row(table(["City (sorted)"], [["Athens"], ["London"], ["London"], ["Paris"], ["Paris"]], size=24),
                         table(["S#", "Name", "Status", "City"], [["S1", "Smith", "20", "London"], ["S2", "Jones", "10", "Paris"], ["S3", "Blake", "30", "Paris"],
                                                                  ["S4", "Clark", "20", "London"], ["S5", "Adams", "30", "Athens"]], size=24), gap=24), gap=12, flex="1"), gap=40),
             notes="Like the index at the back of a book: sorted keys with pointers to the rows, so the DBMS doesn't scan the whole table.")
 
+    d.slide("indextypes", "Indexes", "Types of indexes",
+            row(col(card("Clustered", size=26, body="Stores the table's **rows themselves** in index-key order: the index *is* the table. Only **one** per table."),
+                    code_block("""CREATE CLUSTERED INDEX ix_emp_ssn
+  ON employee (ssn);
+-- a PRIMARY KEY is clustered
+-- by default in SQL Server""", size=22), gap=16),
+                col(card("Non-clustered", size=26, body="A **separate** sorted structure with pointers back to the rows. A table can have **many**."),
+                    code_block("""CREATE NONCLUSTERED INDEX
+  ix_emp_salary
+  ON employee (salary);
+-- other DBMSs: CREATE INDEX""", size=22), gap=16),
+                col(card("Unique", size=26, body="Rejects **duplicate** values in the indexed column(s). Created automatically for PRIMARY KEY and UNIQUE constraints."),
+                    code_block("""CREATE UNIQUE INDEX uq_proj_pname
+  ON project (pname);""", size=22), gap=16), gap=24)
+            + callout("CLUSTERED / NONCLUSTERED is SQL Server syntax (MySQL InnoDB also clusters rows by the primary key). In Oracle and PostgreSQL every ordinary index works like a non-clustered one: Oracle's clustered equivalent is an *index-organized table*.", tone="blue", size=24),
+            notes="New slide (added in the Google Slides edition). A clustered index decides the physical order of the rows, so there can be only one; non-clustered indexes are extra structures that point back to the rows. PostgreSQL's CLUSTER command reorders a table once but does not keep it ordered.")
+
     d.slide("indexrules", "Indexes", "When to create an index",
             row(card("Create an index when", tone="blue", size=26, items=["The column has a **wide range** of values",
                                                                           "The column has **many NULLs** and you search the non-null values",
-                                                                          "Columns are often used **together** in WHERE or JOIN",
-                                                                          "The table is **large** and most queries return **< 2–4%** of rows"]),
+                                                                          "Columns are often used **together** in WHERE or JOIN"]),
                 card("Avoid an index when", tone="accent", size=26, items=["The table is **small**",
                                                                            "The column is rarely used in conditions",
-                                                                           "Most queries return **> 2–4%** of rows",
                                                                            "The table is **updated very often**",
                                                                            "The column is used inside an **expression** (unless function-based)"]))
             + callout("Every INSERT, UPDATE and DELETE must also update every index. **More indexes is not always better.**", size=26),
@@ -764,7 +784,7 @@ UPDATE v_supplier SET status = 10 WHERE s_id = 'S1';""",
 -- composite: helps WHERE dno = ? AND lname = ?
 CREATE INDEX emp_dno_lname_idx ON employee (dno, lname);
 
-CREATE UNIQUE INDEX emp_email_uq ON employee (email);
+CREATE INDEX emp_email_idx ON employee (email);
 
 DROP INDEX emp_salary_idx;            -- Oracle, PostgreSQL
 DROP INDEX emp_salary_idx ON employee; -- SQL Server, MySQL""",
@@ -798,4 +818,5 @@ DROP INDEX emp_salary_idx ON employee; -- SQL Server, MySQL""",
         ("Docs", "Microsoft T-SQL reference", "SQL Server syntax and examples", "https://learn.microsoft.com/en-us/sql/t-sql/language-reference"),
         ("Read", "Use The Index, Luke", "how indexes really work, free online", "https://use-the-index-luke.com/")])
 
+    d.thanks()
     return d

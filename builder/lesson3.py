@@ -292,4 +292,5 @@ def build():
         ("Practice", "DB Fiddle", "run your CREATE TABLE statements online", "https://www.db-fiddle.com/"),
         ("Course", "CMU 15-445", "relational model lecture", "https://15445.courses.cs.cmu.edu/")])
 
+    d.thanks()
     return d

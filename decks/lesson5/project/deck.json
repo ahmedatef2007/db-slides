@@ -2,7 +2,7 @@
  "v": 4,
  "createdOnFiles": {
   "v": 1,
-  "at": "2026-10-02T17:07:48Z"
+  "at": "2026-10-06T09:38:39Z"
  },
  "lists": "css",
  "title": "Lesson 5 · Normalization",
@@ -37,14 +37,21 @@
   "d4",
   "iti0",
   "iti1",
+  "iti2",
+  "iti3",
   "real0",
   "real1",
+  "real2",
+  "real3",
   "supp0",
   "supp1",
+  "supp2",
+  "supp3",
   "recap",
   "salesorder",
   "practice",
-  "study"
+  "study",
+  "thanks"
  ],
  "sections": {
   "s1": {
@@ -84,7 +91,7 @@
    "namespace": "databasecourse",
    "artifact": "https://claude.ai/artifact/WdbVXkRa43NmX6n2AKuXTF",
    "version": "1790852595-4915",
-   "copiedAt": "2026-10-02T17:07:48Z"
+   "copiedAt": "2026-10-06T09:38:39Z"
   }
  ]
 }

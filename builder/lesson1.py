@@ -9,17 +9,25 @@ def build():
             ["File systems vs DBMS", "Three-schema architecture", "Data models", "NoSQL", "Big Data", "Environments"],
             notes="Welcome. This lesson sets the vocabulary we use for the whole course: database, DBMS, schema, data model, data independence.")
 
-    d.slide("course", "The course", "Five lessons, from data to SQL",
+    d.slide("overview", "Objective", "What this course covers",
+            row(col(p("This course introduces the **fundamentals of databases**.", size=34),
+                    p("Students develop skills in the **design, construction, modification and use** of databases and **Structured Query Language (SQL)**.", size=34),
+                    flex="3", gap=32),
+                card("References", items=["Ramez Elmasri & Shamkant Navathe, *Fundamentals of Database Systems*",
+                                          "C. J. Date, *An Introduction to Database Systems*"], icon="Book", size=28, flex="2"),
+                gap=48),
+            notes="Course objective and the two reference books used throughout: Elmasri & Navathe (the COMPANY example comes from it) and C. J. Date.")
+
+    d.slide("course", "The course", "Five days, from data to SQL",
             table(["Lesson", "Topic", "You will be able to"],
                   [["1", "Introduction to databases", "Explain what a DBMS does and why we use one"],
                    ["2", "Entity Relationship Diagrams", "Model a business narrative as an ERD"],
                    ["3", "Mapping ERD to tables", "Turn any ERD into a relational schema in 7 steps"],
                    ["4", "SQL", "Create tables, query, join, group, and secure data"],
-                   ["5", "Normalization", "Detect anomalies and normalize a table to 3NF / BCNF"]],
+                   ["5", "Normalization", "Detect anomalies and normalize a table to 3NF"]],
                   widths=[12, 34, 54], size=28)
             + row(card("Time", body="15 hours of lectures · 12 hours of labs", icon="Clock", size=28),
-                  card("Grading", body="Assignments and labs **40%** · Final exam **60%**", icon="Check", size=28),
-                  card("Running examples", body="The **COMPANY** database plus ITI student and course data.", icon="Database", size=28)),
+                  card("Grading", body="Assignments and labs **40%** · Final exam **60%**", icon="Check", size=28)),
             notes="Running examples: the COMPANY database (from Elmasri & Navathe) appears in Lessons 2, 4 and 5; Lesson 3 maps ITI student, instructor and course examples. Students see the same kind of design travel from narrative -> ERD -> tables -> SQL -> normalization.")
 
     d.slide("objectives", "Lesson 1", "By the end of this lesson you can",
@@ -39,15 +47,15 @@ def build():
             + row(card("Sales program", items=["customers.dat", "orders.dat"], icon="Code"),
                   card("Billing program", items=["customers.csv (again)", "invoices.dat"], icon="Code"),
                   card("HR program", items=["employees.xls", "payroll.dat"], icon="Code"))
-            + callout("The same customer lives in two files with two formats. Change an address in Sales and Billing still sends the invoice to the old one.", label="Problem:"),
+            + callout("The same customer lives in two files with two formats. So a change of address in Sales never reaches Billing, which still sends the invoice to the old one.", label="Problem:"),
             notes="Example: a company where every department wrote its own program and file. Ask the students: what happens when a customer moves?")
 
     d.slide("filelimits", "Files to databases", "Limitations of the file-based approach",
-            grid([card("Separation & isolation", body="Data is split across files; combining it needs custom code for every question."),
+            grid([card("Separation & isolation", body="Data is split across files; combining it needs custom code (a new program) for every question."),
                   card("Duplication", body="The same facts are stored many times: wasted space and **inconsistent** copies."),
                   card("Program–data dependence", body="The file layout is coded into each program. Add a field and every program must change."),
-                  card("Incompatible formats", body="COBOL, C, Excel, CSV… files written by one program cannot be read by another."),
-                  card("No integrity rules", body="Nothing stops a negative salary or an order for a customer who does not exist."),
+                  card("Incompatible formats", body="Excel, CSV… files written by one program cannot be easily read by another."),
+                  card("No integrity rules", body="Nothing stops a negative salary, or an order for a customer who does not exist, from being written to a file."),
                   card("No concurrency or recovery", body="Two users updating the same file at once, or a crash mid-write, can corrupt data.")], cols=3),
             notes="The last two cards are additions that complete the picture: the DBMS functions on the next slides answer each of these six problems one by one.")
 
@@ -74,7 +82,7 @@ def build():
             row(card("Database", body="A collection of **related data** with a meaning, e.g. all students, courses and grades of a university.", icon="Database", size=30),
                 card("DBMS", body="Software to **define, construct, manipulate and share** databases, e.g. PostgreSQL, Oracle, SQL Server, MySQL.", icon="Settings", size=30),
                 card("Database system", body="The DBMS **plus** the database (and often the applications that use it).", icon="Globe", size=30))
-            + callout("**Defining** = specifying data types and constraints. **Constructing** = storing the data. **Manipulating** = querying and updating it.", tone="blue"),
+            + callout("**Defining** = specifying data types and the constraints that rule the data. **Constructing** = storing the data. **Manipulating** = querying and updating it.", tone="blue"),
             notes="DBMS is a collection of programs that enables users to create and maintain a database. Defining a database involves specifying the data types and constraints. Constructing the database is storing the data on some storage medium. Manipulating includes querying the database to retrieve, update or delete specific data.")
 
     e = ERD()
@@ -104,7 +112,7 @@ def build():
                   card("Data dictionary", body="A catalog describing every object (metadata)", icon="Book")], cols=4),
             notes="Original question to the class: 'What are the other functions of DBMS?' Answer: data security & integrity, concurrency, recovery, performance, data dictionary. Each maps to a later lesson: SQL (Lesson 4) covers DDL, DCL, transactions and indexes.")
 
-    d.slide("proscons", "The DBMS", "Advantages and costs",
+    d.slide("proscons", "The DBMS", "Advantages and costs of a DBMS",
             row(card("Advantages", tone="blue", size=28, items=[
                 "Controlled redundancy → no inconsistent copies",
                 "Restricted unauthorized access",
@@ -114,10 +122,10 @@ def build():
                 "Program–data independence; faster development"]),
                 card("Costs to weigh", tone="accent", size=28, items=[
                     "Licenses can be expensive (open-source options: PostgreSQL, MySQL, SQLite)",
-                    "Skilled staff and training (DBA, designers)",
+                    "Skilled staff and training (DBA, designers, developers)",
                     "Overhead for very small or single-purpose apps",
                     "Central point of failure → needs backups and replication",
-                    "Vendor lock-in: SQL dialects differ between products"])),
+                    "Vendor lock-in: may be incompatible with other DBMS products"])),
             notes="Updated: the original listed only 'expensive' and 'may be incompatible with other DBMS'. Today cost depends on the product (many are free and open source); the incompatibility point is really vendor lock-in through SQL dialects and proprietary features.")
 
     d.slide("users", "People", "Who works with a database",
@@ -146,7 +154,7 @@ def build():
         lab += pin_text(128, y - 18, 240, t, 26, ACCENT, bold=True)
     for y, t in ((432, "external / conceptual mapping"), (600, "conceptual / internal mapping")):
         lab += pin_text(1340, y - 16, 420, t, 24, MUTED, italic=True)
-    d.diagram("threeschema", "Architecture", "The three-schema architecture", e, side=lab,
+    d.diagram("threeschema", "Architecture", "The Three-Schema Architecture", e, side=lab,
               notes="Also called the ANSI/SPARC architecture. Each level is described by a schema; the DBMS maps requests and results between levels.")
 
     d.slide("levels", "Architecture", "What each level describes",
@@ -155,7 +163,7 @@ def build():
                    ["Conceptual (logical)", "What data exists and how is it related?", "Tables EMPLOYEE, DEPARTMENT, PROJECT with keys and constraints"],
                    ["Internal (physical)", "How is it stored and accessed?", "Data files, pages, a B-tree index on SSN, compression"]],
                   widths=[24, 30, 46], size=28)
-            + callout("**Mappings** translate a request from one level to the next (e.g. a view query → a query on base tables → page reads). They cost time, which is why some systems collapse levels.", tone="blue"),
+            + callout("**Mappings** translate a request from one level to the next (e.g. a view query → a query on base tables → page reads). These mappings can be time-consuming, but some mapping between the conceptual and internal levels is always necessary.", tone="blue"),
             notes="External: deals with how users access the schema, e.g. a data input form or a view. Conceptual: the basic database model with tables and constraints. Internal: physical storage, files and indexes; it hides hardware and OS details from the data model.")
 
     e = ERD()
@@ -198,7 +206,7 @@ def build():
             notes="Preview only: we formalize this in Lesson 3. Point out that Dno links each employee to a department row in another table.")
 
     # ---------------- Part 3 ----------------
-    d.divider("d3", "03", "Beyond relational", "NoSQL stores, data warehouses, Big Data and where databases run.")
+    d.divider("d3", "03", "Beyond relational", "NoSQL stores, vector databases, data warehouses, Big Data and where databases run.")
 
     d.slide("nosql", "Beyond relational", "Non-relational (NoSQL) databases",
             row(col(p("Usually **no fixed schema and no foreign keys**. Each store uses a **data model optimized for one kind of data** and access pattern.", size=32),
@@ -227,6 +235,23 @@ def build():
             + callout("Most real systems use **both** (*polyglot persistence*): e.g. PostgreSQL for orders and payments, Redis for sessions.", tone="blue"),
             notes="New slide: helps students decide rather than memorize. ACID is covered in Lesson 4.")
 
+    d.slide("vector", "Beyond relational", "Vector databases",
+            row(col(ul(["A vector database stores data as **numerical vectors** (embeddings) that represent the meaning or features of text, images or audio.",
+                        "It uses **similarity search** (such as cosine similarity) to find related items, instead of exact matches like traditional databases.",
+                        "Vector databases power modern AI applications: **semantic search**, recommendation systems and **retrieval-augmented generation (RAG)**."], size=28),
+                    flex="1"),
+                code_block("""-- each item becomes an embedding
+"cat"     → [ 0.21, -0.43,  0.88, … ]
+"kitten"  → [ 0.19, -0.40,  0.85, … ]
+"invoice" → [-0.72,  0.15,  0.04, … ]
+
+-- query: "small cat"
+nearest:  kitten 0.97 · cat 0.95
+-- cosine similarity, 1 = same meaning""", size=24, flex="1", plain=True),
+                gap=40)
+            + callout("Examples: **Pinecone, Milvus, Weaviate, Chroma**. Relational systems are adding vector search too: **pgvector** for PostgreSQL, the **VECTOR** type in Oracle 23ai.", tone="blue"),
+            notes="New slide (added in the Google Slides edition). An embedding model turns each item into a list of numbers; items with similar meaning get nearby vectors, so 'kitten' is close to 'cat' and far from 'invoice'. The database indexes these vectors (e.g. HNSW) to find nearest neighbours fast.")
+
     d.slide("dw", "Beyond relational", "Data warehouses",
             p("A **data warehouse** is a separate database, built for **analysis**, that integrates historical data from many operational systems.", size=32)
             + table(["", "Operational DB (OLTP)", "Data warehouse (OLAP)"],
@@ -243,9 +268,8 @@ def build():
             + row(card("Volume", body="Terabytes to petabytes: more than one server can store or process.", icon="Database", size=28),
                   card("Velocity", body="Data arrives fast and continuously: clicks, sensors, transactions.", icon="Lightning", size=28),
                   card("Variety", body="Structured tables, text, images, video, logs, JSON.", icon="Star", size=28))
-            + p("Two more Vs are often added: **Veracity** (can we trust it?) and **Value** (is it worth it?).", size=28)
-            + p("Source of the definition: McKinsey Global Institute, *Big data: The next frontier for innovation, competition, and productivity*, May 2011.", size=24, color=MUTED),
-            notes="Fixed: the original slide attributed a different definition ('data whose scale, distribution, diversity and/or timeliness require new technical architectures...') to this McKinsey report; the quote now on the slide is the report's own definition. Typical tools: Hadoop/HDFS and Spark for processing, data lakes on cloud object storage, streaming with Kafka.")
+            + p("Two more Vs are often added: **Veracity** (can we trust it?) and **Value** (is it worth it?).", size=28),
+            notes="Source of the definition: McKinsey Global Institute, Big data: The next frontier for innovation, competition, and productivity, May 2011. Fixed: the original slide attributed a different definition ('data whose scale, distribution, diversity and/or timeliness require new technical architectures...') to this McKinsey report; the quote now on the slide is the report's own definition. Typical tools: Hadoop/HDFS and Spark for processing, data lakes on cloud object storage, streaming with Kafka.")
 
     d.slide("environments", "Beyond relational", "Where databases run",
             grid([card("Centralized / mainframe", body="One powerful machine; users connect from terminals."),
@@ -299,4 +323,5 @@ def build():
         ("Docs", "PostgreSQL tutorial", "install a real DBMS and try it", "https://www.postgresql.org/docs/current/tutorial.html"),
         ("Explore", "DB-Engines ranking", "which DBMS products are popular, by family", "https://db-engines.com/en/ranking")])
 
+    d.thanks()
     return d

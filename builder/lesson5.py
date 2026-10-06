@@ -20,6 +20,7 @@ def stage_box(label, lines, tone=None, size=24):
 
 def build():
     d = Deck(5, "Normalization", "Lesson 5 · Normalization")
+    d.lecturer = ("Lecturer: Rana Salah", "rsalah@iti.gov.eg · Room 3005")
 
     d.cover("cover", "Normalization",
             "Test a table design against normal forms to remove redundancy and update anomalies.",
@@ -46,11 +47,11 @@ def build():
         return col(p(label, size=26, color=ACCENT, extra="font-weight:600"), row(*kids, gap=12), gap=12)
 
     d.slide("what", "Why normalize", "What is normalization?",
-            callout("Normalization takes a table through a series of tests (**normal forms**) to certify the goodness of a design and **minimize redundancy and anomalies**.", label="Definition:", size=30)
-            + flow("Top-down design: normalization checks the result (most common)",
-                   ["Requirements", "ERD", "Map to tables", "Check with normal forms"], "blue")
-            + flow("Bottom-up design: normalization builds the tables (legacy forms, files, spreadsheets)",
-                   ["Existing forms & files", "Attributes + FDs", "Normalize step by step", "Tables in 3NF"], "blue"),
+            callout("Normalization **splits a big table into smaller tables** so that each fact is stored only once. The rules we check a table against are called **normal forms** (1NF, 2NF, 3NF…).", label="Definition:", size=30)
+            + flow("Case 1 – you start from an ERD (Lessons 2–3): normalization is a final check",
+                   ["Requirements", "ERD", "Map to tables", "Check: is every table in 3NF?"], "blue")
+            + flow("Case 2 – you start from existing data (spreadsheet, old form): normalization designs the tables",
+                   ["One big table of all the data", "Find the dependencies", "Split: 1NF → 2NF → 3NF", "Clean tables, each fact once"], "blue"),
             notes="Normalization plays a limited role when the top-down (ERD) approach is used, and a major role in the bottom-up approach, where it is essential to build appropriate relations.")
 
     d.slide("anomalies", "Why normalize", "Redundancy causes anomalies",
@@ -59,8 +60,8 @@ def build():
                    ["English", "453453453", "5", "**Research**", "**333445555**"], ["Zelaya", "999887777", "4", "Administration", "987654321"]],
                   widths=[18, 22, 16, 24, 20], size=24)
             + grid([card("Insert anomaly", body="Can't add a new department until it has an employee (Ssn is the key).", tone="accent", size=26),
-                    card("Update anomaly", body="Research's manager changes → update **every** Research row, or the data becomes inconsistent.", tone="accent", size=26),
-                    card("Delete anomaly", body="Delete Zelaya, the last employee of dept 4 → Administration is **lost**.", tone="accent", size=26)], cols=3),
+                    card("Update anomaly", body="Research's department manager changes (update) → we must update **every** Research row, or the data becomes inconsistent.", tone="accent", size=26),
+                    card("Delete anomaly", body="Delete Zelaya, the last employee of dept 4 → the Administration department data is **lost**.", tone="accent", size=26)], cols=3),
             gap=28,
             notes="EMP_DEPT combines employee and department facts in one table. Department data (Dname, Dmgr_ssn) is repeated for every employee: that redundancy is what causes all three anomalies.")
 
@@ -106,6 +107,7 @@ def build():
                      ["FD2", "Ssn → Ename", "**Partial**: depends on part of the key"],
                      ["FD3", "Pnumber → {Pname, Plocation}", "**Partial**: depends on part of the key"]],
                     widths=[12, 46, 42], size=24))
+    expl += pin_text(1192, 292, 600, "FD = functional dependency", 24, MUTED, align="right")
     d.slide("fdpartial", "Functional dependencies", "Full and partial dependencies", lines + cells + labs + expl,
             notes="Redrawn from the original figure (Elmasri & Navathe). The key of EMP_PROJ is {Ssn, Pnumber}. FD2 and FD3 are partial: they violate 2NF.")
 
@@ -125,7 +127,7 @@ def build():
                        items=["{Ssn, Pnumber} → Hours"]),
                   card("Partial", size=26, body="X → Y is **partial** if some attribute can be removed from X and the dependency **still holds**.",
                        items=["{Ssn, Pnumber} → Ename (Ssn alone is enough)"]),
-                  card("Transitive", tone="accent", size=26, body="X → Y is **transitive** if X → Z and Z → Y, where Z is **not** a key (nor part of one).",
+                  card("Transitive", tone="accent", size=26, body="X → Y is **transitive** if X → Z and Z → Y, where Z is **not** a key (or part of one).",
                        items=["Ssn → Dnumber → Dname"])], cols=3))
 
     # ---------- 03 ----------
@@ -156,21 +158,21 @@ def build():
 
     d.slide("school0", "School example", "School example: unnormalized",
             table(["Stud_ID", "Name", "Location", "Tel", "Level", "Level_Mgr", "Subject", "Subj_Desc", "Grade"],
-                  [["11", "Ali", "Cairo", "010", "Primary", "Noha M.", "DB, CN", "Database, Networks", "A, B"],
-                   ["22", "Mai", "Giza", "011, 010", "Primary", "Noha M.", "CN, DB", "Networks, Database", "B, C"],
-                   ["33", "Marwa", "Giza", "010", "Secondary", "Moh. A.", "SW, DB", "Software, Database", "A, A"]],
+                  [["11", "Ali", "Cairo", "010xx", "Primary", "Noha M.", "DB, CN", "Database, Networks", "A, B"],
+                   ["22", "Mai", "Giza", "011xx, 010xx", "Primary", "Noha M.", "CN, DB", "Networks, Database", "B, C"],
+                   ["33", "Marwa", "Giza", "010xx, 012xx", "Secondary", "Moh. A.", "SW, DB", "Software, Database", "A, A"]],
                   widths=[9, 9, 10, 10, 11, 11, 10, 19, 11], size=24)
-            + row(callout("**Tel** is multi-valued.", tone="blue", size=26),
-                  callout("**Subject, Subj_Desc, Grade** form a repeating group.", tone="blue", size=26),
-                  callout("**Level → Level_Mgr** and **Subject → Subj_Desc** hide more FDs.", size=26)),
+            + row(callout("**Tel** is multi-valued: one student can have several phone numbers. It stands alone, so it moves to its own table.", tone="blue", size=24),
+                  callout("**Subject** is multi-valued too, but each subject brings its own Subj_Desc and Grade: the three form a **repeating group**.", tone="blue", size=24),
+                  callout("**Level → Level_Mgr** and **Subject → Subj_Desc** are FDs hidden inside the table: they drive the 2NF and 3NF steps.", size=24)),
             notes="Solution path (original notes): 1NF (Stud_ID, Name, Loc, Level, Level_Mgr), (Stud_ID, Tel), (Stud_ID, Subject, Subj_desc, Grade); 2NF moves Subj_desc to (Subject, Subj_desc); 3NF moves Level_Mgr to (Level, Level_Mgr).")
 
     d.slide("school1", "School example", "School example: 1NF",
             stage_box("1NF", [("STUDENT", ["_Stud_ID_", "Name", "Location", "Level", "Level_Mgr"]),
                               ("STUDENT_TEL", ["_Stud_ID*_", "_Tel_"]),
-                              ("STUDENT_SUBJECT", ["_Stud_ID*_", "_Subject_", "Subject_Desc", "Grade"])], size=28)
+                              ("STUD_SUBJECT", ["_Stud_ID*_", "_Subject_", "Subj_Desc", "Grade"])], size=28)
             + key_legend()
-            + callout("Every cell is now atomic. But STUDENT_SUBJECT still repeats Subject_Desc for every student taking that subject.", size=28))
+            + callout("Every cell is now atomic. But STUD_SUBJECT still repeats Subj_Desc for every student taking that subject: Subj_Desc depends on Subject alone, only part of the key {Stud_ID, Subject}.", size=28))
 
     d.slide("2nf", "Normal forms", "Second normal form (2NF)",
             callout("A table is in **2NF** if it is in 1NF and **no non-key attribute is partially dependent** on the primary key.", size=30)
@@ -184,9 +186,9 @@ def build():
             stage_box("2NF", [("STUDENT", ["_Stud_ID_", "Name", "Location", "Level", "Level_Mgr"]),
                               ("STUDENT_TEL", ["_Stud_ID*_", "_Tel_"]),
                               ("STUD_SUBJECT", ["_Stud_ID*_", "_Subject*_", "Grade"]),
-                              ("SUBJECT", ["_Subject_", "Subject_Desc"])], size=28)
+                              ("SUBJECT", ["_Subject_", "Subj_Desc"])], size=28)
             + key_legend()
-            + callout("Subject → Subject_Desc was partial (only part of {Stud_ID, Subject}). STUDENT is still not in 3NF: Level → Level_Mgr.", size=28))
+            + callout("Subject → Subj_Desc was partial (only part of {Stud_ID, Subject}). STUDENT is still not in 3NF: Level → Level_Mgr.", size=28))
 
     d.slide("3nf", "Normal forms", "Third normal form (3NF)",
             callout("A table is in **3NF** if it is in 2NF and **no non-key attribute depends transitively** on the primary key (no non-key → non-key dependency).", size=30)
@@ -201,7 +203,7 @@ def build():
                               ("LEVEL", ["_Level_", "Level_Mgr"]),
                               ("STUDENT_TEL", ["_Stud_ID*_", "_Tel_"]),
                               ("STUD_SUBJECT", ["_Stud_ID*_", "_Subject*_", "Grade"]),
-                              ("SUBJECT", ["_Subject_", "Subject_Desc"])], size=28)
+                              ("SUBJECT", ["_Subject_", "Subj_Desc"])], size=28)
             + key_legend()
             + callout("Five tables, each about **one thing**. Changing a level manager now updates exactly one row.", tone="blue", size=28))
 
@@ -253,7 +255,7 @@ def build():
             + callout("Normalize first; denormalize only with a **measured** reason, and document it.", size=28))
 
     # ---------- 04 ----------
-    d.divider("d4", "04", "Worked examples", "An ITI student sheet, real school data and a suppliers table.")
+    d.divider("d4", "04", "Examples", "An ITI student sheet, real school data and a suppliers table.")
 
     d.slide("iti0", "ITI example", "ITI student sheet",
             row(card(None, size=26, items=["Student number: **ITI205-40**", "Name: Hassan Ali Ahmed", "Address (Street, City): 12 Haram St, Giza",
@@ -263,16 +265,31 @@ def build():
                      ["CS", "Cyber Security", "60", "Above average technical"]], widths=[20, 38, 18, 24], size=24),
             gap=28)
 
-    d.slide("iti1", "ITI example", "ITI sheet: 1NF → 2NF → 3NF",
-            row(stage_box("1NF", [("STUDENT", ["_Stud_No_", "Stud_Name", "F_code", "Faculty", "Major", "Street", "City"]),
-                                  ("STUDENT_TEL", ["_Stud_No*_", "_Tel_No_"]),
-                                  ("DEPT_STUDENT", ["_Dept_Name_", "_Stud_No*_", "Dept_Desc", "Ad_Grade", "Comments"])]),
-                stage_box("2NF", [("DEPT_STUDENT", ["_Dept_Name*_", "_Stud_No*_", "Ad_Grade", "Comments"]),
-                                  ("DEPARTMENT", ["_Dept_Name_", "Dept_Desc"])]),
-                stage_box("3NF", [("STUDENT", ["_Stud_No_", "Stud_Name", "F_code*", "Major", "Street", "City"]),
-                                  ("FACULTY", ["_F_code_", "Faculty"])], tone="blue"), gap=20)
-            + key_legend(),
-            notes="1NF: phone numbers and the department rows were repeating; Address split into Street, City. 2NF: Dept_Desc depends only on Dept_Name. 3NF: Faculty depends on F_code, a non-key attribute.")
+    def nf_slide(sid, eyebrow_, title, label, tables, expl, notes=""):
+        d.slide(sid, eyebrow_, title,
+                stage_box(label, tables, tone="blue" if label == "3NF" else None, size=28)
+                + key_legend()
+                + callout(expl, size=28),
+                notes=notes)
+
+    nf_slide("iti1", "ITI example", "ITI sheet: 1NF", "1NF",
+             [("STUDENT", ["_Stud_No_", "Stud_Name", "F_code", "Faculty", "Major", "Street", "City"]),
+              ("STUDENT_TEL", ["_Stud_No*_", "_Tel_No_"]),
+              ("DEPT_STUDENT", ["_Dept_Name_", "_Stud_No*_", "Dept_Desc", "Ad_Grade", "Comments"])],
+             "**Address** is composite, so it becomes Street and City. **Tel** is multi-valued, so it moves to STUDENT_TEL. The department rows are a **repeating group**, so they move to DEPT_STUDENT with key {Dept_Name, Stud_No}.")
+    nf_slide("iti2", "ITI example", "ITI sheet: 2NF", "2NF",
+             [("STUDENT", ["_Stud_No_", "Stud_Name", "F_code", "Faculty", "Major", "Street", "City"]),
+              ("STUDENT_TEL", ["_Stud_No*_", "_Tel_No_"]),
+              ("DEPT_STUDENT", ["_Dept_Name*_", "_Stud_No*_", "Ad_Grade", "Comments"]),
+              ("DEPARTMENT", ["_Dept_Name_", "Dept_Desc"])],
+             "**Dept_Desc** depends on Dept_Name alone, only part of the key {Dept_Name, Stud_No}: it moves to DEPARTMENT. Ad_Grade and Comments describe one student in one department, so they need the **whole key** and stay.")
+    nf_slide("iti3", "ITI example", "ITI sheet: 3NF", "3NF",
+             [("STUDENT", ["_Stud_No_", "Stud_Name", "F_code*", "Major", "Street", "City"]),
+              ("FACULTY", ["_F_code_", "Faculty"]),
+              ("STUDENT_TEL", ["_Stud_No*_", "_Tel_No_"]),
+              ("DEPT_STUDENT", ["_Dept_Name*_", "_Stud_No*_", "Ad_Grade", "Comments"]),
+              ("DEPARTMENT", ["_Dept_Name_", "Dept_Desc"])],
+             "In STUDENT, **F_code → Faculty** (a non-key column decides another non-key column): Faculty moves to FACULTY and F_code stays as a FK. Five tables, each about one thing.")
 
     d.slide("real0", "Real-world data", "Real-world school data",
             table(["First", "Parent 1", "Parent 2", "App No", "City", "Postal code", "Birth date"],
@@ -286,17 +303,25 @@ def build():
             gap=24,
             notes="0NF: STUDENT(App_No, Stud_Fname, Parent1, Parent2, City, Postal_Code, Birthdate, Prev_Teacher, Curr_Teacher, Student_Phone, Course, Course_Desc, Enrolled, Att_Days)")
 
-    d.slide("real1", "Real-world data", "School data: 1NF → 3NF",
-            stage_box("1NF", [("STUDENT", ["_App_No_", "Stud_Fname", "Parent1", "Parent2", "City", "Postal_Code", "Birthdate", "Prev_Teacher", "Curr_Teacher"]),
-                              ("STUDENT_COURSE", ["_App_No*_", "_Course_", "Course_Desc", "Enrolled", "Att_Days"]),
-                              ("STUDENT_PHONE", ["_App_No*_", "_Phone_"])])
-            + row(stage_box("2NF (changed)", [("STUDENT_COURSE", ["_App_No*_", "_Course*_", "Enrolled", "Att_Days"]),
-                                              ("COURSE", ["_Course_", "Course_Desc"])]),
-                  stage_box("3NF (changed)", [("STUDENT", ["_App_No_", "…", "Postal_Code*", "…"]),
-                                              ("POSTAL_CODE", ["_Postal_Code_", "City"])], tone="blue"), gap=20)
-            + key_legend(),
-            gap=20,
-            notes="Clarified: the original 3NF table was written City (City, Postal_Code). The dependency is Postal_Code → City, so the new table's key is Postal_Code and STUDENT keeps Postal_Code as a FK.")
+    nf_slide("real1", "Real-world data", "School data: 1NF", "1NF",
+             [("STUDENT", ["_App_No_", "Stud_Fname", "Parent1", "Parent2", "City", "Postal_Code", "Birthdate", "Prev_Teacher", "Curr_Teacher"]),
+              ("STUDENT_PHONE", ["_App_No*_", "_Phone_"]),
+              ("STUDENT_COURSE", ["_App_No*_", "_Course_", "Course_Desc", "Enrolled", "Att_Days"])],
+             "**Student phone** is multi-valued, so it moves to STUDENT_PHONE. Course, Course desc, Enrolled and Attended days repeat together for each course: a **repeating group**, so they move to STUDENT_COURSE with key {App_No, Course}.")
+    nf_slide("real2", "Real-world data", "School data: 2NF", "2NF",
+             [("STUDENT", ["_App_No_", "Stud_Fname", "Parent1", "Parent2", "City", "Postal_Code", "Birthdate", "Prev_Teacher", "Curr_Teacher"]),
+              ("STUDENT_PHONE", ["_App_No*_", "_Phone_"]),
+              ("STUDENT_COURSE", ["_App_No*_", "_Course*_", "Enrolled", "Att_Days"]),
+              ("COURSE", ["_Course_", "Course_Desc"])],
+             "**Course_Desc** depends on Course alone, only part of the key {App_No, Course}: it moves to COURSE. Enrolled and Att_Days describe one student in one course, so they need the **whole key** and stay.")
+    nf_slide("real3", "Real-world data", "School data: 3NF", "3NF",
+             [("STUDENT", ["_App_No_", "Stud_Fname", "Parent1", "Parent2", "Postal_Code*", "Birthdate", "Prev_Teacher", "Curr_Teacher"]),
+              ("POSTAL_CODE", ["_Postal_Code_", "City"]),
+              ("STUDENT_PHONE", ["_App_No*_", "_Phone_"]),
+              ("STUDENT_COURSE", ["_App_No*_", "_Course*_", "Enrolled", "Att_Days"]),
+              ("COURSE", ["_Course_", "Course_Desc"])],
+             "**Postal_Code → City** (22003 is always Annandale): City moves to POSTAL_CODE, keyed by Postal_Code. Not City(City, Postal_Code): one city can have several postal codes, so City cannot be the key.",
+             notes="Clarified: the original 3NF table was written City (City, Postal_Code). The dependency is Postal_Code → City, so the new table's key is Postal_Code and STUDENT keeps Postal_Code as a FK.")
 
     d.slide("supp0", "Suppliers", "Suppliers data",
             row(card(None, size=28, items=["Relation (**S#**, Country, Currency, **P#**, Qty)", "S#: supplier number", "Country: where the supplier is located",
@@ -304,13 +329,16 @@ def build():
                 card("Key", tone="blue", size=28, body="Qty depends on supplier **and** part, so the PK is the composite **{S#, P#}**.",
                      items=["S# → Country", "Country → Currency", "{S#, P#} → Qty"])))
 
-    d.slide("supp1", "Suppliers", "Suppliers: 1NF → 2NF → 3NF",
-            row(stage_box("1NF", [("SUPPLY", ["_S#_", "Country", "Currency", "_P#_", "Qty"])]),
-                stage_box("2NF", [("SUPPLIER", ["_S#_", "Country", "Currency"]), ("SUPPLIER_PART", ["_S#*_", "_P#_", "Qty"])]),
-                stage_box("3NF", [("SUPPLIER", ["_S#_", "Country*"]), ("COUNTRY", ["_Country_", "Currency"]), ("SUPPLIER_PART", ["_S#*_", "_P#_", "Qty"])], tone="blue"), gap=20)
-            + callout("Every value is already atomic, so the original relation **is already in 1NF**. The split into SUPPLIER and SUPPLIER_PART removes the **partial** dependency S# → Country, Currency: that is the **2NF** step.", size=26)
-            + key_legend(),
-            notes="Fixed: the original showed the SUPPLIER / SUPPLIER_PARTS split as the 1NF step and said 2NF was 'same as first'. Since the relation has no multi-valued or repeating attributes it is already in 1NF; removing the partial dependency is by definition the 2NF step.")
+    nf_slide("supp1", "Suppliers", "Suppliers: 1NF", "1NF",
+             [("SUPPLY", ["_S#_", "Country", "Currency", "_P#_", "Qty"])],
+             "Every value is atomic: no multi-valued attribute and no repeating group, so the relation is **already in 1NF**. Its composite key is **{S#, P#}**, because Qty belongs to one supplier and one part.",
+             notes="Fixed: the original showed the SUPPLIER / SUPPLIER_PARTS split as the 1NF step and said 2NF was 'same as first'. Since the relation has no multi-valued or repeating attributes it is already in 1NF; removing the partial dependency is by definition the 2NF step.")
+    nf_slide("supp2", "Suppliers", "Suppliers: 2NF", "2NF",
+             [("SUPPLIER", ["_S#_", "Country", "Currency"]), ("SUPPLIER_PART", ["_S#*_", "_P#_", "Qty"])],
+             "**Country** and **Currency** depend on S# alone, only part of the key {S#, P#}: they move to SUPPLIER. Qty needs the whole key and stays in SUPPLIER_PART.")
+    nf_slide("supp3", "Suppliers", "Suppliers: 3NF", "3NF",
+             [("SUPPLIER", ["_S#_", "Country*"]), ("COUNTRY", ["_Country_", "Currency"]), ("SUPPLIER_PART", ["_S#*_", "_P#_", "Qty"])],
+             "**S# → Country → Currency** is transitive: Currency moves to COUNTRY. A country's currency is now stored once, however many suppliers it has.")
 
     d.takeaways("recap", [
         "Redundancy causes **insert, update and delete anomalies**.",
@@ -347,4 +375,5 @@ def build():
         ("Course", "CMU 15-445", "database design and normal forms lectures", "https://15445.courses.cs.cmu.edu/"),
         ("Practice", "DB Fiddle", "create your normalized tables and test joins", "https://www.db-fiddle.com/")])
 
+    d.thanks()
     return d

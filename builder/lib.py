@@ -356,6 +356,12 @@ class Deck:
         self.add(sid, section(sid, inner, bg=ACCENT_FILL, notes=notes, footer=False,
                               layout="padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px"))
 
+    def thanks(self, sid="thanks", notes=""):
+        inner = (f'<p style="font-size:30px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:{ACCENT_ON_INK}">ITI · Database Fundamentals</p>'
+                 f'<h1 style="font-family:{DISPLAY};font-size:160px;font-weight:600;line-height:1;color:{ON_INK}">Thank You !</h1>')
+        self.add(sid, section(sid, inner, bg=INK, notes=notes, footer=False,
+                              layout="padding:128px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:40px"))
+
     def diagram(self, sid, eyebrow, title, erd, caption=None, notes="", side=None):
         body = erd.html()
         if caption:

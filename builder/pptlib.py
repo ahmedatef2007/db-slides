@@ -881,6 +881,7 @@ class SlideSpec:
 
 class Deck:
     closing = None      # (eyebrow, title_plain, title_hl, title_rest, text) set by build_pptx
+    lecturer = None     # overrides LECTURER for one deck
     cover_split = None  # (plain, highlighted)
 
     def __init__(self, lesson_no, short, title):
@@ -934,6 +935,17 @@ class Deck:
     def resources(self, sid, title, items, notes=""):
         self._add(SlideSpec("resources", sid, title=title, items=items, notes=notes))
 
+    def thanks(self, sid="thanks", notes=""):
+        self._add(SlideSpec("thanks", sid, notes=notes))
+
+    def _thanks(self, sl):
+        bg = sl.background.fill
+        bg.solid()
+        bg.fore_color.rgb = rgb(INK)
+        Text("ITI · Database Fundamentals", size=30 / FS, color=ACCENT_ON_INK, font=DISPLAY, bold=True, upper=True,
+             align="center").draw(sl, LEFT, 400, WIDTH, 44, 1)
+        Text("Thank You !", size=140 / FS, color=ON_INK, font=DISPLAY, bold=True, align="center", line=1).draw(sl, LEFT, 470, WIDTH, 180, 1)
+
     # -- drawing --
     def _frame(self, sl, eyebrow_, title, num, total):
         eb = (eyebrow_ or "").upper()
@@ -973,8 +985,9 @@ class Deck:
             set_run(par.add_run(), plain_, sz, INK, DISPLAY, bold=True)
         set_run(par.add_run(), hl, sz, ACCENT, DISPLAY, bold=True)
         Text(sp.kw["subtitle"], size=34 / FS, color=BODY).draw(sl, LEFT, 650, 1500, 60, 1)
-        Text(LECTURER[0], size=26 / FS, color=INK, font=DISPLAY, bold=True).draw(sl, LEFT, 932, 900, 36, 1)
-        Text(LECTURER[1], size=26 / FS, color=BODY).draw(sl, LEFT, 974, 900, 36, 1)
+        lect = self.lecturer or LECTURER
+        Text(lect[0], size=26 / FS, color=INK, font=DISPLAY, bold=True).draw(sl, LEFT, 932, 900, 36, 1)
+        Text(lect[1], size=26 / FS, color=BODY).draw(sl, LEFT, 974, 900, 36, 1)
         Text(CREDITS[0], size=24 / FS, color=MUTED, align="right").draw(sl, 924, 938, 900, 34, 1)
         Text(CREDITS[1], size=24 / FS, color=BODY, align="right").draw(sl, 924, 976, 900, 34, 1)
 
@@ -1066,8 +1079,11 @@ class Deck:
         layout = prs.slide_layouts[0]
         # cover, agenda, ... , closing
         order = [self.specs[0], SlideSpec("agenda", "agenda")] + self.specs[1:]
+        thanks = [sp for sp in order if sp.kind == "thanks"]
+        order = [sp for sp in order if sp.kind != "thanks"]
         if self.closing:
             order.append(SlideSpec("closing", "closing"))
+        order += thanks
         total = len(order)
         for num, sp in enumerate(order, 1):
             sl = prs.slides.add_slide(layout)
@@ -1091,6 +1107,8 @@ class Deck:
             elif k == "closing":
                 eb, label, big, sub = self.closing
                 self._dark(sl, eb, big, sub, label=label)
+            elif k == "thanks":
+                self._thanks(sl)
             notes = sp.kw.get("notes", "") if hasattr(sp, "kw") else ""
             if notes and notes.strip():
                 sl.notes_slide.notes_text_frame.text = notes.strip()
